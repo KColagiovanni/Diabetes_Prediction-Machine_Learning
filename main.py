@@ -36,7 +36,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 # Define the data model
 model = DecisionTreeClassifier()
 # model = LinearRegression()
-# model.fit(X, y)  # Train the model with training data set
+# model.fit(X, y)  # Train the model with csv data set
 model.fit(X_train, y_train)  # Train the model with training data set
 prediction = model.predict(X_test)  # Ask for a prediction with test data set
 # prediction = model.predict([should_be_diabetic, should_not_be_diabetic])
@@ -100,8 +100,24 @@ print(f'Accuracy Score: {ac_score}')
 
 
 # ---------- Plot Data ----------
-labels = ['Pregnancies', 'Glucose', 'BloodPressure', 'SkinThickness', 'Insulin',  'BMI', 'DiabetesPedigreeFunction', 'Age']
-fig, ax = plt.subplots(8, 1, constrained_layout=True, figsize=(10, 6))#, height_ratios=[1.5, 1.5,1.5,1.5,1.5,1.5,1.5,1.5])
+labels = [
+    'Pregnancies',
+    'Glucose',
+    'BloodPressure',
+    'SkinThickness',
+    'Insulin',
+    'BMI',
+    'DiabetesPedigreeFunction',
+    'Age'
+]
+
+fig, ax = plt.subplots(
+    8,
+    1,
+    constrained_layout=True,
+    figsize=(10, 6)
+    #, height_ratios=[1.5, 1.5,1.5,1.5,1.5,1.5,1.5,1.5])
+)
 
 for data_point in range(len(labels)):
     ax[data_point].barh(1, X[labels[data_point]].max(), label="Max Data")
@@ -109,127 +125,24 @@ for data_point in range(len(labels)):
     ax[data_point].barh(1, neg[labels[data_point]].mean(), label="Doesn't Have Diabetes Avg")
     ax[data_point].barh(1, X[labels[data_point]].min(), label="Min Data")
     ax[data_point].set_title(labels[data_point])
-    # ax[data_point].yticks(ticks=[])
-
-# plt.xticks(ticks=[])
-# plt.yticks(ticks=[])
-# fig.tight_layout(pad=15.0)
-# plt.subplots_adjust(bottom=0.1, top=0.9, hspace=1.0)
-# plt.subplot_tool()
+    # Remove y-axis tick marks here
 
 plt.legend()
 plt.show()
 
+# Scatter Plot CSV Data
+# print(len(X['Age'].to_numpy()))
+# print(sorted(X['Age'].to_numpy()))
+for data_point in range(len(df.to_numpy())):
+    # print(df['Outcome'].to_numpy())
+    print(df[data_point].to_numpy())
+    # if df.to_numpy()[data_point][8] == 0:
+    #     color = 'green'
+    # else:
+    #     color = 'red'
+    # plt.scatter(data_point, sorted(df.to_numpy[data_point[7]].to_numpy()), color=color)
 
-
-
-
-
-
-
-
-
-
-
-
-
-# # Pregnancies
-# ax[0].barh(1, pos['Pregnancies'].mean())
-# ax[0].barh(1, neg['Pregnancies'].mean())
-# ax[0].set_title(labels[0])
-# ax[0].yticks(ticks=[])
-
-# # plt.subplot(8, 1, 1)
-# # plt.barh(1, pos['Pregnancies'].mean())
-# # plt.barh(1, neg['Pregnancies'].mean())
-#
-# # Glucose
-# ax[0].barh(1, pos['Glucose'].mean())
-# ax[0].barh(1, neg['Glucose'].mean())
-# ax[0].set_title(labels[1])
-# ax[0].yticks(ticks=[])
-#
-# # plt.subplot(8, 1, 2)
-# # plt.barh(1, pos['Glucose'].mean())
-# # plt.barh(1, neg['Glucose'].mean())
-# # plt.ylabel(labels[1])
-# # plt.yticks(ticks=[])
-#
-# # Blood Pressure
-# ax[0].barh(1, pos['Pregnancies'].mean())
-# ax[0].barh(1, neg['Pregnancies'].mean())
-# ax[0].set_title(labels[0])
-# ax[0].yticks(ticks=[])
-#
-# # plt.subplot(8, 1, 3)
-# # plt.barh(1, pos['BloodPressure'].mean())
-# # plt.barh(1, neg['BloodPressure'].mean())
-# # plt.ylabel(labels[2])
-# # plt.yticks(ticks=[])
-#
-# # Skin Thickness
-# ax[0].barh(1, pos['Pregnancies'].mean())
-# ax[0].barh(1, neg['Pregnancies'].mean())
-# ax[0].set_title(labels[0])
-# ax[0].yticks(ticks=[])
-#
-# # plt.subplot(8, 1, 4)
-# # plt.barh(1, pos['SkinThickness'].mean())
-# # plt.barh(1, neg['SkinThickness'].mean())
-# # plt.ylabel(labels[3])
-# # plt.yticks(ticks=[])
-#
-# # Insulin
-# ax[0].barh(1, pos['Pregnancies'].mean())
-# ax[0].barh(1, neg['Pregnancies'].mean())
-# ax[0].set_title(labels[0])
-# ax[0].yticks(ticks=[])
-#
-# # plt.subplot(8, 1, 5)
-# # plt.barh(1, pos['Insulin'].mean())
-# # plt.barh(1, neg['Insulin'].mean())
-# # plt.ylabel(labels[4])
-# # plt.yticks(ticks=[])
-#
-# # BMI
-# ax[0].barh(1, pos['Pregnancies'].mean())
-# ax[0].barh(1, neg['Pregnancies'].mean())
-# ax[0].set_title(labels[0])
-# ax[0].yticks(ticks=[])
-#
-# # plt.subplot(8, 1, 6)
-# # plt.barh(1, pos['BMI'].mean())
-# # plt.barh(1, neg['BMI'].mean())
-# # plt.ylabel(labels[5])
-# # plt.yticks(ticks=[])
-#
-# # 'Diabetes Pedigree Function'
-# ax[0].barh(1, pos['Pregnancies'].mean())
-# ax[0].barh(1, neg['Pregnancies'].mean())
-# ax[0].set_title(labels[0])
-# ax[0].yticks(ticks=[])
-#
-# # plt.subplot(8, 1, 7)
-# # plt.barh(1, pos['DiabetesPedigreeFunction'].mean())
-# # plt.barh(1, neg['DiabetesPedigreeFunction'].mean())
-# # plt.ylabel(labels[6])
-# # plt.yticks(ticks=[])
-#
-# # Age
-# ax[0].barh(1, pos['Pregnancies'].mean())
-# ax[0].barh(1, neg['Pregnancies'].mean())
-# ax[0].set_title(labels[0])
-# ax[0].yticks(ticks=[])
-#
-# # plt.subplot(8, 1, 8)
-# # plt.barh(1, pos['Age'].mean())
-# # plt.barh(1, neg['Age'].mean())
-# # plt.ylabel(labels[7])
-# # plt.yticks(ticks=[])
-
-# plt.xticks(ticks=[])
-# plt.yticks(ticks=[])
-# fig.tight_layout(pad=15.0)
-# plt.subplots_adjust(bottom=0.1, top=0.9, hspace=1.0)
-# plt.subplot_tool()
+# plt.scatter(range(len(X['Age'].to_numpy())), sorted(X['Age'].to_numpy()))
+# plt.scatter(range(len(pos['Age'].to_numpy())), pos['Age'].to_numpy())
+# plt.scatter(range(len(neg['Age'].to_numpy())), neg['Age'].to_numpy())
 # plt.show()
