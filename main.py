@@ -101,13 +101,13 @@ print(f'Accuracy Score: {ac_score}')
 
 # ---------- Plot Data ----------
 labels = ['Pregnancies', 'Glucose', 'BloodPressure', 'SkinThickness', 'Insulin',  'BMI', 'DiabetesPedigreeFunction', 'Age']
-fig, ax = plt.subplots(8, 1, constrained_layout=True)#, height_ratios=[1.5, 1.5,1.5,1.5,1.5,1.5,1.5,1.5])
+fig, ax = plt.subplots(8, 1, constrained_layout=True, figsize=(10, 6))#, height_ratios=[1.5, 1.5,1.5,1.5,1.5,1.5,1.5,1.5])
 
 for data_point in range(len(labels)):
-    print(f'data_point is: {data_point}')
-    print(f'labels[data_point] is: {labels[data_point]}')
-    ax[data_point].barh(1, pos[labels[data_point]].mean())
-    ax[data_point].barh(1, neg[labels[data_point]].mean())
+    ax[data_point].barh(1, X[labels[data_point]].max(), label="Max Data")
+    ax[data_point].barh(1, pos[labels[data_point]].mean(), label="Has Diabetes Avg")
+    ax[data_point].barh(1, neg[labels[data_point]].mean(), label="Doesn't Have Diabetes Avg")
+    ax[data_point].barh(1, X[labels[data_point]].min(), label="Min Data")
     ax[data_point].set_title(labels[data_point])
     # ax[data_point].yticks(ticks=[])
 
@@ -117,8 +117,21 @@ for data_point in range(len(labels)):
 # plt.subplots_adjust(bottom=0.1, top=0.9, hspace=1.0)
 # plt.subplot_tool()
 
-fig = figsize=(2,2)
+plt.legend()
 plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # # Pregnancies
 # ax[0].barh(1, pos['Pregnancies'].mean())
