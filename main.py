@@ -116,7 +116,6 @@ fig, ax = plt.subplots(
     1,
     constrained_layout=True,
     figsize=(10, 6)
-    #, height_ratios=[1.5, 1.5,1.5,1.5,1.5,1.5,1.5,1.5])
 )
 
 for data_point in range(len(labels)):
@@ -125,24 +124,34 @@ for data_point in range(len(labels)):
     ax[data_point].barh(1, neg[labels[data_point]].mean(), label="Doesn't Have Diabetes Avg")
     ax[data_point].barh(1, X[labels[data_point]].min(), label="Min Data")
     ax[data_point].set_title(labels[data_point])
-    # Remove y-axis tick marks here
+    ax[data_point].tick_params(left=False, labelleft=False)  # Remove y-axis tick marks and labels
 
 plt.legend()
 plt.show()
 
 # Scatter Plot CSV Data
-# print(len(X['Age'].to_numpy()))
-# print(sorted(X['Age'].to_numpy()))
-for data_point in range(len(df.to_numpy())):
-    # print(df['Outcome'].to_numpy())
-    print(df[data_point].to_numpy())
-    # if df.to_numpy()[data_point][8] == 0:
-    #     color = 'green'
-    # else:
-    #     color = 'red'
-    # plt.scatter(data_point, sorted(df.to_numpy[data_point[7]].to_numpy()), color=color)
+# Scatter plot for each input data column.
+for column in range(len(labels)):
 
-# plt.scatter(range(len(X['Age'].to_numpy())), sorted(X['Age'].to_numpy()))
-# plt.scatter(range(len(pos['Age'].to_numpy())), pos['Age'].to_numpy())
-# plt.scatter(range(len(neg['Age'].to_numpy())), neg['Age'].to_numpy())
-# plt.show()
+    # PLot each data point in the column.
+    for data_point in range(len(df.to_numpy())):
+
+        # Plot the data points in green when the patient doesn't have diabetes and red then they do.
+        if df.to_numpy()[data_point][8] == 0:
+            color = 'green'  # Does not have diabetes.
+        else:
+            color = 'red'  # Has diabetes.
+
+        # Remove the data points with a 0 value in all columns, EXCEPT pregnancies.
+        if df.to_numpy()[data_point][column] > 0 and column > 0:
+            plt.scatter(df.to_numpy()[data_point][column], data_point, color=color)
+
+        # Plot all pregnancy data.
+        elif column == 0:
+            plt.scatter(df.to_numpy()[data_point][column], data_point, color=color)
+
+
+    print(f'Showing the {labels[column]} plot')
+    plt.title(labels[column])
+    plt.yticks([])  # Remove the y-axis tick marks
+    plt.show()
