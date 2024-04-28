@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import *
 import sys
+from process_and_train_data import ProcessAndTrainData
 
 
 class Window(QMainWindow):
@@ -7,52 +8,76 @@ class Window(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        button_width = 150
-        button_x = 125
+        widget_width = 150
+        pos_x = 125
 
         # Define the window title
         self.setWindowTitle('Do you have diabetes?')
 
         # Define the window geometry
-        self.setGeometry(0, 0, 400, 300)
+        self.setGeometry(0, 0, 400, 350)
 
-        # creating a label widget
-        # self.label = QLabel("Icon is set", self)
+        # Creating an accuracy label widget
+        self.accuracy_label = QLabel("Accuracy: ", self)
 
-        # moving position
-        # self.label.move(100, 100)
+        # Defining position
+        self.accuracy_label.move(pos_x, 250)
+
+        self.accuracy_label.resize(widget_width, 25)
 
         # setting up border
-        # self.label.setStyleSheet("border: 1px solid black;")
+        self.accuracy_label.setStyleSheet("border: 1px solid black;")
 
         # Show bar graph button
         self.bar_graph_button = QPushButton(self)
         self.bar_graph_button.setText('Show Bar Graph')
-        self.bar_graph_button.setFixedWidth(button_width)
-        self.bar_graph_button.move(button_x, 150)
+        self.bar_graph_button.setFixedWidth(widget_width)
+        self.bar_graph_button.move(pos_x, 100)
+        self.bar_graph_button.clicked.connect(self.show_bar_graph)
 
         # Show scatter plots button
         self.scatter_plots_button = QPushButton(self)
         self.scatter_plots_button.setText('Show Scatter Plot')
-        self.scatter_plots_button.setFixedWidth(button_width)
-        self.scatter_plots_button.move(button_x, 200)
+        self.scatter_plots_button.setFixedWidth(widget_width)
+        self.scatter_plots_button.move(pos_x, 150)
+        self.scatter_plots_button.clicked.connect(self.show_scatter_plots)
+
+        # Predict data button
+        self.predict_button = QPushButton(self)
+        self.predict_button.setText('Predict')
+        self.predict_button.setFixedWidth(widget_width)
+        self.predict_button.move(pos_x, 200)
+        self.predict_button.clicked.connect(self.make_prediction)
 
         # Close button
         self.close_button = QPushButton(self)
         self.close_button.setText('Close')
-        self.close_button.setFixedWidth(button_width)
-        self.close_button.move(button_x, 250)
+        self.close_button.setFixedWidth(widget_width)
+        self.close_button.move(pos_x, 300)
         self.close_button.clicked.connect(self.close_window)
 
         # Show the window and all the widgets
         self.show()
 
+    def make_prediction(self):
+        pt = ProcessAndTrainData()
+        data_frame = pt.load_data('diabetes.csv')
+        X, y, neg, pos = pt.prepare_data(data_frame)
+        X_train, X_test, y_train, y_test = pt.train_data(X, y)
+        accuracy_score = pt.predict_data(X_train, X_test, y_train, y_test)
+        self.accuracy_label.setText(f'Accuracy: {round(accuracy_score * 100, 2)}%')
+
+    def show_bar_graph(self):
+        print('Bar Graph')
+
+    def show_scatter_plots(self):
+        print('Scatter Plot')
+
     def close_window(self):
         print('Exiting Application')
 
-        # close the window
+        # Close the window
         self.close()
-
 
 # create pyqt5 app
 App = QApplication(sys.argv)
