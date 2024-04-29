@@ -37,11 +37,14 @@ class PlotData():
 
         print('Showing the bar graph plot.')
         plt.legend()
-        plt.show()
+        # plt.show()
+        return plt
+
 
     def scatter_plot(self, data_frame):
         # Generate a scatter plot for each input data column.
-        for column in range(len(self.labels)):
+        for column in range(len(self.labels)):        # pw.show()
+
 
             zero_count = 0
 
