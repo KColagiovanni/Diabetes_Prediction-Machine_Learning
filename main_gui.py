@@ -76,7 +76,8 @@ class Window(QMainWindow):
         X, y, neg, pos = ptd.prepare_data(data_frame)
         pd.bar_graph(X, neg, pos)
 
-    def show_scatter_plots(self):
+    @staticmethod
+    def show_scatter_plots():
         pw = PlotWindow()
         pw.show()
         print('Preparing the scatter plots')
@@ -86,12 +87,14 @@ class Window(QMainWindow):
         pd.scatter_plot(data_frame)
 
     def close_window(self):
-        print('Exiting Application')
+        print('Closing Main Window')
 
         # Close the window
         self.close()
 
+
 class PlotWindow(QWidget):
+
     def __init__(self):
 
         super().__init__()
@@ -99,6 +102,15 @@ class PlotWindow(QWidget):
         self.plot_label = QLabel('Scatter Plot')
         plot_window_layout.addWidget(self.plot_label)
         self.setLayout(plot_window_layout)
+
+        # Define the window geometry
+        self.setGeometry(0, 0, 400, 350)
+
+    def close_window(self):
+        print('Closing Main Window')
+
+        # Close the window
+        self.close()
 
 
 # create pyqt5 app

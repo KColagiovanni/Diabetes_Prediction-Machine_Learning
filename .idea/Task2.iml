@@ -4,7 +4,7 @@
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/C964" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.11 (Project)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.11 (Machine-Learning-Capstone)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>

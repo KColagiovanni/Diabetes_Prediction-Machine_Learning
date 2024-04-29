@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 
 
-class PlotData():
+class PlotData:
 
     def __init__(self):
 
