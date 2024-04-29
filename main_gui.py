@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import *
 import sys
 from process_and_train_data import ProcessAndTrainData
+from plot_data import PlotData
 
 
 class Window(QMainWindow):
@@ -60,24 +61,45 @@ class Window(QMainWindow):
         self.show()
 
     def make_prediction(self):
-        pt = ProcessAndTrainData()
-        data_frame = pt.load_data('diabetes.csv')
-        X, y, neg, pos = pt.prepare_data(data_frame)
-        X_train, X_test, y_train, y_test = pt.train_data(X, y)
-        accuracy_score = pt.predict_data(X_train, X_test, y_train, y_test)
+        ptd = ProcessAndTrainData()
+        data_frame = ptd.load_data('diabetes.csv')
+        X, y, neg, pos = ptd.prepare_data(data_frame)
+        X_train, X_test, y_train, y_test = ptd.train_data(X, y)
+        accuracy_score = ptd.predict_data(X_train, X_test, y_train, y_test)
         self.accuracy_label.setText(f'Accuracy: {round(accuracy_score * 100, 2)}%')
 
     def show_bar_graph(self):
-        print('Bar Graph')
+        print('Preparing the bar graph')
+        ptd = ProcessAndTrainData()
+        pd = PlotData()
+        data_frame = ptd.load_data('diabetes.csv')
+        X, y, neg, pos = ptd.prepare_data(data_frame)
+        pd.bar_graph(X, neg, pos)
 
     def show_scatter_plots(self):
-        print('Scatter Plot')
+        pw = PlotWindow()
+        pw.show()
+        print('Preparing the scatter plots')
+        ptd = ProcessAndTrainData()
+        pd = PlotData()
+        data_frame = ptd.load_data('diabetes.csv')
+        pd.scatter_plot(data_frame)
 
     def close_window(self):
         print('Exiting Application')
 
         # Close the window
         self.close()
+
+class PlotWindow(QWidget):
+    def __init__(self):
+
+        super().__init__()
+        plot_window_layout = QVBoxLayout()
+        self.plot_label = QLabel('Scatter Plot')
+        plot_window_layout.addWidget(self.plot_label)
+        self.setLayout(plot_window_layout)
+
 
 # create pyqt5 app
 App = QApplication(sys.argv)
