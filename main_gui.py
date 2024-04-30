@@ -1,11 +1,11 @@
 import sys
 from PyQt5.QtWidgets import *
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 from process_and_train_data import ProcessAndTrainData
 from plot_data import PlotData
 
 
-class Window(QMainWindow):
+class MainWindow(QMainWindow):
 
     def __init__(self):
         super().__init__()
@@ -41,7 +41,7 @@ class Window(QMainWindow):
         self.scatter_plots_button.setText('Show Scatter Plot')
         self.scatter_plots_button.setFixedWidth(widget_width)
         self.scatter_plots_button.move(pos_x, 150)
-        # self.scatter_plots_button.clicked.connect(self.plot_bar_graph)
+        self.scatter_plots_button.clicked.connect(self.show_scatter_plots)
 
         # Predict data button
         self.predict_button = QPushButton(self)
@@ -77,7 +77,16 @@ class Window(QMainWindow):
         pd = PlotData()
         pd.bar_graph(X, neg, pos)
 
+    @staticmethod
+    def show_scatter_plots():
+        print('Preparing the scatter plots')
+        ptd = ProcessAndTrainData()
+        pd = PlotData()
+        data_frame = ptd.load_data('diabetes.csv')
+        pd.scatter_plot(data_frame)
+
     def close_window(self):
+
         print('Exiting Application')
 
         # Close the window
@@ -90,7 +99,7 @@ if __name__ == '__main__':
     App = QApplication(sys.argv)
 
     # Create the instance of our Window
-    window = Window()
+    window = MainWindow()
 
     # Start the app
     sys.exit(App.exec())

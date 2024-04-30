@@ -1,14 +1,14 @@
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from PyQt5.QtWidgets import *
-import sys
+# from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+# from PyQt5.QtWidgets import *
+# import sys
 
 
-class PlotData(QDialog):
+class PlotData():
 
     def __init__(self):
 
-        super().__init__()
+        # super().__init__()
 
         # # Define the window title
         # self.setWindowTitle('Plot')
@@ -68,7 +68,7 @@ class PlotData(QDialog):
         plt.legend()
         plt.show()
 
-
+        # _-_-_-_-_-_-_-_-_-_-_-_-_-_ Testing to display the plot in a new window _-_-_-_-_-_-_-_-_-_-_-_-_-_
         # data = X['Pregnancies'].to_numpy()
         #
         # print(data)
@@ -87,10 +87,14 @@ class PlotData(QDialog):
         # ax.plot(data, '*-')
         #
         # self.canvas.draw()
+        # _-_-_-_-_-_-_-_-_-_-_-_-_-__-_-_-_-_-_-_-_-_-_-_-_-_-__-_-_-_-_-_-_-_-_-_-_-_-_-__-_-_-_-_-_-_-_-_
+
 
     def scatter_plot(self, data_frame):
+
         # Generate a scatter plot for each input data column.
         for column in range(len(self.labels)):        # pw.show()
+            print(f'\n\nStarting to process the {self.labels[column]} column')
 
             zero_count = 0
 
@@ -102,6 +106,7 @@ class PlotData(QDialog):
                     color = 'green'
                 else:  # Has diabetes.
                     color = 'red'
+
                 # Remove the data points with a 0 value in all columns, EXCEPT pregnancies.
                 if data_frame.to_numpy()[data_point][column] > 0 and column > 0:
                     plt.scatter(data_frame.to_numpy()[data_point][column], data_point, color=color)
@@ -110,29 +115,28 @@ class PlotData(QDialog):
                 # Plot all pregnancy data.
                 elif column == 0:
                     plt.scatter(data_frame.to_numpy()[data_point][column], data_point, color=color)
+                    zero_count = len(data_frame.to_numpy())
 
-            if self.labels[column] == 'Pregnancies':
-                zero_count = len(data_frame.to_numpy())
-
-            print(
-                f'Showing the {self.labels[column]} plot. ({len(data_frame.to_numpy()) - zero_count} zero points have been dropped)')
-            plt.legend(['Has diabetes', 'Does not have diabetes'], loc='upper right')
-            plt.title(self.labels[column])
-            plt.yticks([])  # Remove the y-axis tick marks
+            print(f'Showing the {self.labels[column]} plot. ({len(data_frame.to_numpy()) - zero_count}'
+                  ' zero points have been dropped)')
+            # plt.legend(['Has diabetes', 'Does not have diabetes'], loc='upper right')
+            # plt.title(self.labels[column])
+            # plt.yticks([])  # Remove the y-axis tick marks
+            print(f'Showing the {self.labels[column]} graph now...')
             plt.show()
 
 
 # driver code
-if __name__ == '__main__':
-
-    # Create PyQt5 app
-    App = QApplication(sys.argv)
-
-    # Create the instance of our Window
-    window = PlotData()
-
-    # Start the app
-    sys.exit(App.exec())
+# if __name__ == '__main__':
+#
+#     # Create PyQt5 app
+#     App = QApplication(sys.argv)
+#
+#     # Create the instance of our Window
+#     window = PlotData()
+#
+#     # Start the app
+#     sys.exit(App.exec())
 
 # class PlotWindow(QWidget):
 #

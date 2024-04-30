@@ -154,9 +154,7 @@ for column in range(len(labels)):
         # Plot all pregnancy data.
         elif column == 0:
             plt.scatter(df.to_numpy()[data_point][column], data_point, color=color)
-
-    if labels[column] == 'Pregnancies':
-        zero_count = len(df.to_numpy())
+            zero_count = len(df.to_numpy())
 
     print(f'Showing the {labels[column]} plot. ({len(df.to_numpy()) - zero_count} zero points have been dropped)')
     plt.legend(['Has diabetes', 'Does not have diabetes'], loc='upper right')
