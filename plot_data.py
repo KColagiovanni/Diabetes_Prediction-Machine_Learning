@@ -1,9 +1,37 @@
 import matplotlib.pyplot as plt
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from PyQt5.QtWidgets import *
+import sys
 
 
-class PlotData:
+class PlotData(QDialog):
 
     def __init__(self):
+
+        super().__init__()
+
+        # # Define the window title
+        # self.setWindowTitle('Plot')
+        #
+        # # Define the window geometry
+        # self.setGeometry(0, 0, 600, 600)
+        #
+        # self.figure = plt.figure()
+        #
+        # # this is the Canvas Widget that
+        # # displays the 'figure' it takes the
+        # # 'figure' instance as a parameter to __init__
+        # self.canvas = FigureCanvas(self.figure)
+        #
+        # plot_window_layout = QVBoxLayout()
+        #
+        # # self.plot_label = QLabel('Plot')
+        # # plot_window_layout.addWidget(self.plot_label)
+        #
+        # # adding canvas to the layout
+        # plot_window_layout.addWidget(self.canvas)
+        #
+        # self.setLayout(plot_window_layout)
 
         # Define a list with the input column names.
         self.labels = [
@@ -18,6 +46,7 @@ class PlotData:
         ]
 
     def bar_graph(self, X, neg, pos):
+
         # Define the subplot
         fig, ax = plt.subplots(
             8,
@@ -37,14 +66,31 @@ class PlotData:
 
         print('Showing the bar graph plot.')
         plt.legend()
-        # plt.show()
-        return plt
+        plt.show()
 
+
+        # data = X['Pregnancies'].to_numpy()
+        #
+        # print(data)
+        #
+        # self.figure.clear()
+        #
+        # ax = self.figure.subplots(
+        #     8,
+        #     1,
+        #     # constrained_layout=True,
+        #     # figsize=(10, 6)
+        # )
+        #
+        # ax = self.figure.add_subplot(111)
+        #
+        # ax.plot(data, '*-')
+        #
+        # self.canvas.draw()
 
     def scatter_plot(self, data_frame):
         # Generate a scatter plot for each input data column.
         for column in range(len(self.labels)):        # pw.show()
-
 
             zero_count = 0
 
@@ -74,3 +120,79 @@ class PlotData:
             plt.title(self.labels[column])
             plt.yticks([])  # Remove the y-axis tick marks
             plt.show()
+
+
+# driver code
+if __name__ == '__main__':
+
+    # Create PyQt5 app
+    App = QApplication(sys.argv)
+
+    # Create the instance of our Window
+    window = PlotData()
+
+    # Start the app
+    sys.exit(App.exec())
+
+# class PlotWindow(QWidget):
+#
+#
+#         self.labels = [
+#             'Pregnancies',
+#             'Glucose',
+#             'BloodPressure',
+#             'SkinThickness',
+#             'Insulin',
+#             'BMI',
+#             'DiabetesPedigreeFunction',
+#             'Age'
+#         ]
+#
+#     def show_bar_graph(self):
+#
+#         # self.figure.clear()
+#
+#         print('\n\nPreparing the bar graph')
+#         ptd = ProcessAndTrainData()
+#         # pd = PlotData()
+#         data_frame = ptd.load_data('diabetes.csv')
+#         X, y, neg, pos = ptd.prepare_data(data_frame)
+#
+#         fig, ax = plt.subplots(
+#             8,
+#             1,
+#             constrained_layout=True,
+#             figsize=(10, 6)
+#         )
+#
+#         # PLot a bar graph that displays all the data.
+#         for data_point in range(len(self.labels)):
+#             ax[data_point].barh(1, X[self.labels[data_point]].max(), label="Max Data")
+#             ax[data_point].barh(1, pos[self.labels[data_point]].mean(), label="Has Diabetes Avg")
+#             ax[data_point].barh(1, neg[self.labels[data_point]].mean(), label="Doesn't Have Diabetes Avg")
+#             ax[data_point].barh(1, X[self.labels[data_point]].min(), label="Min Data")
+#             ax[data_point].set_title(self.labels[data_point])
+#             ax[data_point].tick_params(left=False, labelleft=False)  # Remove y-axis tick marks and labels
+#
+#         print('Showing the bar graph plot.')
+#         plt.legend()
+#         plt.show()
+#
+#         # bg = pd.bar_graph(X, neg, pos)
+#         # bg.show()
+#
+#         # # # create an axis
+#         # ax = self.figure.add_subplot(111)
+#
+#         # plot data
+#         # ax.barh(bg)
+#
+#         # refresh canvas
+#         # self.canvas.draw()
+#
+#     def show_scatter_plots(self):
+#         print('Preparing the scatter plots')
+#         ptd = ProcessAndTrainData()
+#         pd = PlotData()
+#         data_frame = ptd.load_data('diabetes.csv')
+#         pd.scatter_plot(data_frame)

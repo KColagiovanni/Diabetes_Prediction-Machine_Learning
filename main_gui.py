@@ -1,8 +1,6 @@
 import sys
 from PyQt5.QtWidgets import *
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from process_and_train_data import ProcessAndTrainData
 from plot_data import PlotData
 
@@ -14,7 +12,6 @@ class Window(QMainWindow):
 
         widget_width = 150
         pos_x = 125
-        pw = PlotWindow()
 
         # Define the window title
         self.setWindowTitle('Do you have diabetes?')
@@ -37,14 +34,14 @@ class Window(QMainWindow):
         self.bar_graph_button.setText('Show Bar Graph')
         self.bar_graph_button.setFixedWidth(widget_width)
         self.bar_graph_button.move(pos_x, 100)
-        self.bar_graph_button.clicked.connect(pw.show_bar_graph)
+        self.bar_graph_button.clicked.connect(self.plot_bar_graph)
 
         # Show scatter plots button
         self.scatter_plots_button = QPushButton(self)
         self.scatter_plots_button.setText('Show Scatter Plot')
         self.scatter_plots_button.setFixedWidth(widget_width)
         self.scatter_plots_button.move(pos_x, 150)
-        self.scatter_plots_button.clicked.connect(pw.show_scatter_plots)
+        # self.scatter_plots_button.clicked.connect(self.plot_bar_graph)
 
         # Predict data button
         self.predict_button = QPushButton(self)
@@ -71,6 +68,15 @@ class Window(QMainWindow):
         accuracy_score = ptd.predict_data(X_train, X_test, y_train, y_test)
         self.accuracy_label.setText(f'Accuracy: {round(accuracy_score * 100, 2)}%')
 
+    @staticmethod
+    def plot_bar_graph():
+        ptd = ProcessAndTrainData()
+        data_frame = ptd.load_data('diabetes.csv')
+        X, y, neg, pos = ptd.prepare_data(data_frame)
+        print('In plot_bar_graph() method')
+        pd = PlotData()
+        pd.bar_graph(X, neg, pos)
+
     def close_window(self):
         print('Exiting Application')
 
@@ -78,72 +84,13 @@ class Window(QMainWindow):
         self.close()
 
 
-class PlotWindow(QWidget):
-
-    def __init__(self):
-
-        super().__init__()
-
-        self.figure = plt.figure()
-
-        # this is the Canvas Widget that
-        # displays the 'figure' it takes the
-        # 'figure' instance as a parameter to __init__
-        self.canvas = FigureCanvas(self.figure)
-
-        plot_window_layout = QVBoxLayout()
-
-        # Define the window title
-        self.setWindowTitle('Plot')
-
-        # Define the window geometry
-        self.setGeometry(0, 0, 600, 600)
-
-        # self.plot_label = QLabel('Plot')
-        # plot_window_layout.addWidget(self.plot_label)
-
-        # adding canvas to the layout
-        plot_window_layout.addWidget(self.canvas)
-
-        self.setLayout(plot_window_layout)
-
-    def show_bar_graph(self):
-
-        # self.figure.clear()
-
-        print('Preparing the bar graph')
-        ptd = ProcessAndTrainData()
-        pd = PlotData()
-        data_frame = ptd.load_data('diabetes.csv')
-        X, y, neg, pos = ptd.prepare_data(data_frame)
-        bg = pd.bar_graph(X, neg, pos)
-        bg.show()
-        # # # create an axis
-        # ax = self.figure.add_subplot(111)
-        #
-        # # # plot data
-        # ax.barh(bg)
-        #
-        # # # refresh canvas
-        # self.canvas.draw()
-
-    def show_scatter_plots(self):
-        print('Preparing the scatter plots')
-        ptd = ProcessAndTrainData()
-        pd = PlotData()
-        data_frame = ptd.load_data('diabetes.csv')
-        pd.scatter_plot(data_frame)
-
-
-# create pyqt5 app
-App = QApplication(sys.argv)
-
-# create the instance of our Window
-window = Window()
-
-# start the app
-sys.exit(App.exec())
-
-
 if __name__ == '__main__':
-    window()
+
+    # Create PyQt5 app
+    App = QApplication(sys.argv)
+
+    # Create the instance of our Window
+    window = Window()
+
+    # Start the app
+    sys.exit(App.exec())
