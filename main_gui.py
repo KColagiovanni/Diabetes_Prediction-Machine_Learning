@@ -102,4 +102,4 @@ if __name__ == '__main__':
     window = MainWindow()
 
     # Start the app
-    sys.exit(App.exec())
+    sys.exit(App.exec_())
