@@ -1,8 +1,58 @@
 import sys
 from PyQt5.QtWidgets import *
-# import matplotlib.pyplot as plt
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+import plot_data
+import matplotlib.pyplot as plt
 from process_and_train_data import ProcessAndTrainData
-from plot_data import PlotData
+
+
+class PlotData(QWidget):
+
+    def __init__(self):
+        super().__init__()
+
+        print('In PlotData __init__()')
+
+        # Define the window title
+        self.setWindowTitle('Plot')
+
+        # Define the window geometry
+        self.setGeometry(0, 0, 600, 600)
+
+        self.figure = plt.figure()
+
+        # this is the Canvas Widget that
+        # displays the 'figure' it takes the
+        # 'figure' instance as a parameter to __init__
+        self.canvas = FigureCanvas(self.figure)
+
+        # Just some button connected to 'plot' method
+        self.bar_graph_button = QPushButton('Bar Graph')
+
+        # adding action to the button
+        self.bar_graph_button.clicked.connect(plot_data.bar_graph)
+
+        # Just some button connected to 'plot' method
+        self.scatter_plot_button = QPushButton('Scatter Plot')
+
+        # adding action to the button
+        self.scatter_plot_button.clicked.connect(plot_data.scatter_plot)
+
+        plot_window_layout = QVBoxLayout()
+
+        # self.plot_label = QLabel('Plot')
+        # plot_window_layout.addWidget(self.plot_label)
+
+        # adding canvas to the layout
+        plot_window_layout.addWidget(self.canvas)
+
+        # adding push button to the layout
+        plot_window_layout.addWidget(self.bar_graph_button)
+
+        # adding push button to the layout
+        plot_window_layout.addWidget(self.scatter_plot_button)
+
+        self.setLayout(plot_window_layout)
 
 
 class MainWindow(QMainWindow):
@@ -59,6 +109,7 @@ class MainWindow(QMainWindow):
         self.close_button.clicked.connect(self.close_window)
 
         # Show the window and all the widgets
+        print('Showing the main window.')
         self.show()
 
     def make_prediction(self):
@@ -69,14 +120,15 @@ class MainWindow(QMainWindow):
         accuracy_score = ptd.predict_data(X_train, X_test, y_train, y_test)
         self.accuracy_label.setText(f'Accuracy: {round(accuracy_score * 100, 2)}%')
 
-    @staticmethod
-    def show_bar_graph():
-        ptd = ProcessAndTrainData()
-        data_frame = ptd.load_data('diabetes.csv')
-        X, y, neg, pos = ptd.prepare_data(data_frame)
+    # @staticmethod
+    def show_bar_graph(self, checked):
+        # ptd = ProcessAndTrainData()
+        # data_frame = ptd.load_data('diabetes.csv')
+        # X, y, neg, pos = ptd.prepare_data(data_frame)
         print('In show_bar_graph() method')
-        pd = PlotData()
-        pd.bar_graph(X, y, neg, pos)
+        self.pd = PlotData()
+        self.pd.show()
+        # pd.bar_graph(X, y, neg, pos)
         # return X, neg, pos
 
     @staticmethod
