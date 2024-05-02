@@ -11,7 +11,6 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error, accuracy_score
 
 
-
 # main window
 # which inherits QDialog
 class Window(QDialog):
@@ -19,6 +18,12 @@ class Window(QDialog):
     # constructor
     def __init__(self, parent=None):
         super(Window, self).__init__(parent)
+
+        # Define the window title
+        self.setWindowTitle('Plot')
+
+        # Define the window geometry
+        self.setGeometry(0, 0, 600, 600)
 
         # a figure instance to plot on
         self.figure = plt.figure()

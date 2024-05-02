@@ -6,9 +6,11 @@ import sys
 
 class PlotData(QDialog):
 
-    def __init__(self, parent=None):
+    def __init__(self):
 
-        super(PlotData, self).__init__(parent)
+        super().__init__()
+
+        print('In PlotData __init__()')
 
         # Define the window title
         self.setWindowTitle('Plot')
@@ -23,6 +25,18 @@ class PlotData(QDialog):
         # 'figure' instance as a parameter to __init__
         self.canvas = FigureCanvas(self.figure)
 
+        # Just some button connected to 'plot' method
+        self.bar_graph_button = QPushButton('Bar Graph')
+
+        # adding action to the button
+        self.bar_graph_button.clicked.connect(self.bar_graph)
+
+        # Just some button connected to 'plot' method
+        self.scatter_plot_button = QPushButton('Scatter Plot')
+
+        # adding action to the button
+        self.scatter_plot_button.clicked.connect(self.scatter_plot)
+
         plot_window_layout = QVBoxLayout()
 
         # self.plot_label = QLabel('Plot')
@@ -30,6 +44,12 @@ class PlotData(QDialog):
 
         # adding canvas to the layout
         plot_window_layout.addWidget(self.canvas)
+
+        # adding push button to the layout
+        plot_window_layout.addWidget(self.bar_graph_button)
+
+        # adding push button to the layout
+        plot_window_layout.addWidget(self.scatter_plot_button)
 
         self.setLayout(plot_window_layout)
 
@@ -45,7 +65,9 @@ class PlotData(QDialog):
             'Age'
         ]
 
-    def bar_graph(self, X, neg, pos):
+    def bar_graph(self, X, y, neg, pos):
+
+        print('In bar_graph()')
 
         # Define the subplot
         # fig, ax = plt.subplots(
@@ -70,6 +92,8 @@ class PlotData(QDialog):
             # ax.barh(1, pos[self.labels[data_point]].mean())
             # ax.barh(1, neg[self.labels[data_point]].mean())
             ax.barh(1, X[self.labels[data_point]].min())
+
+            print(f'Displaying {self.labels[data_point]} now')
 
             # refresh canvas
             self.canvas.draw()

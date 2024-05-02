@@ -12,6 +12,7 @@ class MainWindow(QMainWindow):
 
         widget_width = 150
         pos_x = 125
+        # pd = PlotData()
 
         # Define the window title
         self.setWindowTitle('Do you have diabetes?')
@@ -34,7 +35,7 @@ class MainWindow(QMainWindow):
         self.bar_graph_button.setText('Show Bar Graph')
         self.bar_graph_button.setFixedWidth(widget_width)
         self.bar_graph_button.move(pos_x, 100)
-        self.bar_graph_button.clicked.connect(self.plot_bar_graph)
+        self.bar_graph_button.clicked.connect(self.show_bar_graph)
 
         # Show scatter plots button
         self.scatter_plots_button = QPushButton(self)
@@ -69,13 +70,14 @@ class MainWindow(QMainWindow):
         self.accuracy_label.setText(f'Accuracy: {round(accuracy_score * 100, 2)}%')
 
     @staticmethod
-    def plot_bar_graph():
+    def show_bar_graph():
         ptd = ProcessAndTrainData()
         data_frame = ptd.load_data('diabetes.csv')
         X, y, neg, pos = ptd.prepare_data(data_frame)
-        print('In plot_bar_graph() method')
+        print('In show_bar_graph() method')
         pd = PlotData()
-        pd.bar_graph(X, neg, pos)
+        pd.bar_graph(X, y, neg, pos)
+        # return X, neg, pos
 
     @staticmethod
     def show_scatter_plots():
