@@ -73,8 +73,6 @@ class PlotData(QWidget):
         # adding canvas to the layout
         plot_window_layout.addWidget(self.canvas)
 
-        self.canvas.
-
         # adding push button to the layout
         plot_selection_layout.addWidget(self.bar_graph_button)
 
