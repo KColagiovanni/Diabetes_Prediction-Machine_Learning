@@ -38,6 +38,12 @@ class PlotData(QWidget):
         # adding action to the button
         self.scatter_plot_button.clicked.connect(plot_data.scatter_plot)
 
+        # Just some button connected to 'plot' method
+        self.close_plot_window_button = QPushButton('Close Window')
+
+        # adding action to the button
+        self.close_plot_window_button.clicked.connect(self.close)
+
         plot_window_layout = QVBoxLayout()
 
         # self.plot_label = QLabel('Plot')
@@ -51,6 +57,8 @@ class PlotData(QWidget):
 
         # adding push button to the layout
         plot_window_layout.addWidget(self.scatter_plot_button)
+
+        plot_window_layout.addWidget(self.close_plot_window_button)
 
         self.setLayout(plot_window_layout)
 
@@ -80,19 +88,12 @@ class MainWindow(QMainWindow):
         # Label border
         self.accuracy_label.setStyleSheet("border: 1px solid black;")
 
-        # Show bar graph button
-        self.bar_graph_button = QPushButton(self)
-        self.bar_graph_button.setText('Show Bar Graph')
-        self.bar_graph_button.setFixedWidth(widget_width)
-        self.bar_graph_button.move(pos_x, 100)
-        self.bar_graph_button.clicked.connect(self.show_bar_graph)
-
         # Show scatter plots button
-        self.scatter_plots_button = QPushButton(self)
-        self.scatter_plots_button.setText('Show Scatter Plot')
-        self.scatter_plots_button.setFixedWidth(widget_width)
-        self.scatter_plots_button.move(pos_x, 150)
-        self.scatter_plots_button.clicked.connect(self.show_scatter_plots)
+        self.show_graphs_button = QPushButton(self)
+        self.show_graphs_button.setText('Show Graphs')
+        self.show_graphs_button.setFixedWidth(widget_width)
+        self.show_graphs_button.move(pos_x, 150)
+        self.show_graphs_button.clicked.connect(self.show_graphs)
 
         # Predict data button
         self.predict_button = QPushButton(self)
@@ -121,23 +122,10 @@ class MainWindow(QMainWindow):
         self.accuracy_label.setText(f'Accuracy: {round(accuracy_score * 100, 2)}%')
 
     # @staticmethod
-    def show_bar_graph(self, checked):
-        # ptd = ProcessAndTrainData()
-        # data_frame = ptd.load_data('diabetes.csv')
-        # X, y, neg, pos = ptd.prepare_data(data_frame)
-        print('In show_bar_graph() method')
+    def show_graphs(self):
+        print('In show_graphs() method')
         self.pd = PlotData()
         self.pd.show()
-        # pd.bar_graph(X, y, neg, pos)
-        # return X, neg, pos
-
-    @staticmethod
-    def show_scatter_plots():
-        print('Preparing the scatter plots')
-        ptd = ProcessAndTrainData()
-        pd = PlotData()
-        data_frame = ptd.load_data('diabetes.csv')
-        pd.scatter_plot(data_frame)
 
     def close_window(self):
 

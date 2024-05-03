@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 from PyQt5.QtWidgets import *
 import sys
 from process_and_train_data import ProcessAndTrainData
+from main_gui import PlotData
 
 # class PlotData(QDialog):
 #
@@ -64,7 +65,7 @@ labels = [
     'Age'
 ]
 
-
+@staticmethod
 def bar_graph():
 
     ptd = ProcessAndTrainData()
@@ -74,44 +75,48 @@ def bar_graph():
     print('In bar_graph()')
 
     # Define the subplot
-    fig, ax = plt.subplots(
-        8,
-        1,
-        constrained_layout=True,
-        figsize=(10, 6)
-    )
+    # fig, ax = plt.subplots(
+    #     8,
+    #     1,
+    #     constrained_layout=True,
+    #     figsize=(10, 6)
+    # )
 
     # PLot a bar graph that displays all the data.
     # for data_point in range(len(self.labels)):
     # clearing old figure
-    # self.figure.clear()
+
+    pd = PlotData()
+
+    pd.figure.clear()
 
     for data_point in range(len(labels)):
 
         # create an axis
-        # ax = self.figure.add_subplot(8, 1, data_point + 1)
+        ax = pd.figure.add_subplot(8, 1, data_point + 1)
 
         # plot data
-        # ax.barh(1, X[self.labels[data_point]].max())
-        # ax.barh(1, pos[self.labels[data_point]].mean())
-        # ax.barh(1, neg[self.labels[data_point]].mean())
-        # ax.barh(1, X[self.labels[data_point]].min())
-        #
-        # print(f'Displaying {self.labels[data_point]} now')
-        #
-        # # refresh canvas
-        # self.canvas.draw()
+        # ax.barh(1, X[labels[data_point]].max())
+        # ax.barh(1, pos[labels[data_point]].mean())
+        # ax.barh(1, neg[labels[data_point]].mean())
+        # ax.barh(1, X[labels[data_point]].min())
+        ax.barh(1, X[labels[data_point]].mean())
 
-        ax[data_point].barh(1, X[labels[data_point]].max(), label="Max Data")
-        ax[data_point].barh(1, pos[labels[data_point]].mean(), label="Has Diabetes Avg")
-        ax[data_point].barh(1, neg[labels[data_point]].mean(), label="Doesn't Have Diabetes Avg")
-        ax[data_point].barh(1, X[labels[data_point]].min(), label="Min Data")
-        ax[data_point].set_title(labels[data_point])
-        ax[data_point].tick_params(left=False, labelleft=False)  # Remove y-axis tick marks and labels
+        print(f'Displaying {labels[data_point]} now')
 
-    print('Showing the bar graph plot.')
-    plt.legend()
-    plt.show()
+        # refresh canvas
+        pd.canvas.draw()
+
+    #     ax[data_point].barh(1, X[labels[data_point]].max(), label="Max Data")
+    #     ax[data_point].barh(1, pos[labels[data_point]].mean(), label="Has Diabetes Avg")
+    #     ax[data_point].barh(1, neg[labels[data_point]].mean(), label="Doesn't Have Diabetes Avg")
+    #     ax[data_point].barh(1, X[labels[data_point]].min(), label="Min Data")
+    #     ax[data_point].set_title(labels[data_point])
+    #     ax[data_point].tick_params(left=False, labelleft=False)  # Remove y-axis tick marks and labels
+    #
+    # print('Showing the bar graph plot.')
+    # plt.legend()
+    # plt.show()
 
     # _-_-_-_-_-_-_-_-_-_-_-_-_-_ Testing to display the plot in a new window _-_-_-_-_-_-_-_-_-_-_-_-_-_
     # data = X['Pregnancies'].to_numpy()
