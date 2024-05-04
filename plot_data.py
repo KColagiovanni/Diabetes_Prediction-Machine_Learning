@@ -1,260 +1,193 @@
 import matplotlib.pyplot as plt
+from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
-import sys
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from process_and_train_data import ProcessAndTrainData
-from main_gui import PlotData
-
-# class PlotData(QDialog):
-#
-#     def __init__(self):
-#
-#         super().__init__()
-#
-#         print('In PlotData __init__()')
-#
-#         # Define the window title
-#         self.setWindowTitle('Plot')
-#
-#         # Define the window geometry
-#         self.setGeometry(0, 0, 600, 600)
-#
-#         self.figure = plt.figure()
-#
-#         # this is the Canvas Widget that
-#         # displays the 'figure' it takes the
-#         # 'figure' instance as a parameter to __init__
-#         self.canvas = FigureCanvas(self.figure)
-#
-#         # Just some button connected to 'plot' method
-#         self.bar_graph_button = QPushButton('Bar Graph')
-#
-#         # adding action to the button
-#         self.bar_graph_button.clicked.connect(self.bar_graph)
-#
-#         # Just some button connected to 'plot' method
-#         self.scatter_plot_button = QPushButton('Scatter Plot')
-#
-#         # adding action to the button
-#         self.scatter_plot_button.clicked.connect(self.scatter_plot)
-#
-#         plot_window_layout = QVBoxLayout()
-#
-#         # self.plot_label = QLabel('Plot')
-#         # plot_window_layout.addWidget(self.plot_label)
-#
-#         # adding canvas to the layout
-#         plot_window_layout.addWidget(self.canvas)
-#
-#         # adding push button to the layout
-#         plot_window_layout.addWidget(self.bar_graph_button)
-#
-#         # adding push button to the layout
-#         plot_window_layout.addWidget(self.scatter_plot_button)
-#
-#         self.setLayout(plot_window_layout)
-#
-#         # Define a list with the input column names.
-labels = [
-    'Pregnancies',
-    'Glucose',
-    'BloodPressure',
-    'SkinThickness',
-    'Insulin',
-    'BMI',
-    'DiabetesPedigreeFunction',
-    'Age'
-]
-
-@staticmethod
-def bar_graph():
-
-    ptd = ProcessAndTrainData()
-    data_frame = ptd.load_data('diabetes.csv')
-    X, y, neg, pos = ptd.prepare_data(data_frame)
-
-    print('In bar_graph()')
-
-    # Define the subplot
-    # fig, ax = plt.subplots(
-    #     8,
-    #     1,
-    #     constrained_layout=True,
-    #     figsize=(10, 6)
-    # )
-
-    # PLot a bar graph that displays all the data.
-    # for data_point in range(len(self.labels)):
-    # clearing old figure
-
-    pd = PlotData()
-
-    pd.figure.clear()
-
-    for data_point in range(len(labels)):
-
-        # create an axis
-        ax = pd.figure.add_subplot(8, 1, data_point + 1)
-
-        # plot data
-        # ax.barh(1, X[labels[data_point]].max())
-        # ax.barh(1, pos[labels[data_point]].mean())
-        # ax.barh(1, neg[labels[data_point]].mean())
-        # ax.barh(1, X[labels[data_point]].min())
-        ax.barh(1, X[labels[data_point]].mean())
-
-        print(f'Displaying {labels[data_point]} now')
-
-        # refresh canvas
-        pd.canvas.draw()
-
-    #     ax[data_point].barh(1, X[labels[data_point]].max(), label="Max Data")
-    #     ax[data_point].barh(1, pos[labels[data_point]].mean(), label="Has Diabetes Avg")
-    #     ax[data_point].barh(1, neg[labels[data_point]].mean(), label="Doesn't Have Diabetes Avg")
-    #     ax[data_point].barh(1, X[labels[data_point]].min(), label="Min Data")
-    #     ax[data_point].set_title(labels[data_point])
-    #     ax[data_point].tick_params(left=False, labelleft=False)  # Remove y-axis tick marks and labels
-    #
-    # print('Showing the bar graph plot.')
-    # plt.legend()
-    # plt.show()
-
-    # _-_-_-_-_-_-_-_-_-_-_-_-_-_ Testing to display the plot in a new window _-_-_-_-_-_-_-_-_-_-_-_-_-_
-    # data = X['Pregnancies'].to_numpy()
-    #
-    # print(data)
-    #
-    # self.figure.clear()
-    #
-    # ax = self.figure.subplots(
-    #     8,
-    #     1,
-    #     # constrained_layout=True,
-    #     # figsize=(10, 6)
-    # )
-    #
-    # ax = self.figure.add_subplot(111)
-    #
-    # ax.plot(data, '*-')
-    #
-    # self.canvas.draw()
-    # _-_-_-_-_-_-_-_-_-_-_-_-_-__-_-_-_-_-_-_-_-_-_-_-_-_-__-_-_-_-_-_-_-_-_-_-_-_-_-__-_-_-_-_-_-_-_-_
 
 
-def scatter_plot(self, data_frame):
+class PlotData(QWidget):
 
-    print('In scatter_plot()')
+    def __init__(self):
+        super().__init__()
 
-    # print(data_frame['Pregnancies'], data_frame['Pregnancies'].shape)
-    plt.plot(data_frame['Pregnancies'])
-    plt.show()
+        self.labels = [
+            'Pregnancies',
+            'Glucose',
+            'BloodPressure',
+            'SkinThickness',
+            'Insulin',
+            'BMI',
+            'DiabetesPedigreeFunction',
+            'Age'
+        ]
 
-    # # Generate a scatter plot for each input data column.
-    # for column in range(len(self.labels)):
-    #     print(f'\n\nStarting to process the {self.labels[column]} column')
-    #
-    #     zero_count = 0
-    #
-    #     # PLot each data point in the column.
-    #     for data_point in range(len(data_frame.to_numpy())):
-    #
-    #         # Plot the data points in green when the patient doesn't have diabetes and red then they do.
-    #         if data_frame.to_numpy()[data_point][8] == 0:  # Does not have diabetes.
-    #             color = 'green'
-    #         else:  # Has diabetes.
-    #             color = 'red'
-    #
-    #         # Remove the data points with a 0 value in all columns, EXCEPT pregnancies.
-    #         if data_frame.to_numpy()[data_point][column] > 0 and column > 0:
-    #             plt.scatter(data_frame.to_numpy()[data_point][column], data_point, color=color)
-    #             zero_count += 1
-    #
-    #         # Plot all pregnancy data.
-    #         elif column == 0:
-    #             plt.scatter(data_frame.to_numpy()[data_point][column], data_point, color=color)
-    #             zero_count = len(data_frame.to_numpy())
-    #
-    #     print(f'Showing the {self.labels[column]} plot. ({len(data_frame.to_numpy()) - zero_count}'
-    #           ' zero points have been dropped)')
-    #     # plt.legend(['Has diabetes', 'Does not have diabetes'], loc='upper right')
-    #     # plt.title(self.labels[column])
-    #     # plt.yticks([])  # Remove the y-axis tick marks
-    #     print(f'Showing the {self.labels[column]} graph now...')
-    #     plt.show()
+        # Define the window title
+        self.setWindowTitle('Plot')
 
-# def main():
-#     # driver code
-#     # if __name__ == '__main__':
-#
-#     # Create PyQt5 app
-#     App = QApplication(sys.argv)
-#
-#     # Create the instance of our Window
-#     window = PlotData()
-#
-#     window.show()
-#
-#     # Start the app
-#     sys.exit(App.exec_())
+        # Define the window geometry
+        self.setGeometry(0, 0, 1000, 600)
 
-# class PlotWindow(QWidget):
-#
-#
-#         self.labels = [
-#             'Pregnancies',
-#             'Glucose',
-#             'BloodPressure',
-#             'SkinThickness',
-#             'Insulin',
-#             'BMI',
-#             'DiabetesPedigreeFunction',
-#             'Age'
-#         ]
-#
-#     def show_bar_graph(self):
-#
-#         # self.figure.clear()
-#
-#         print('\n\nPreparing the bar graph')
-#         ptd = ProcessAndTrainData()
-#         # pd = PlotData()
-#         data_frame = ptd.load_data('diabetes.csv')
-#         X, y, neg, pos = ptd.prepare_data(data_frame)
-#
-#         fig, ax = plt.subplots(
-#             8,
-#             1,
-#             constrained_layout=True,
-#             figsize=(10, 6)
-#         )
-#
-#         # PLot a bar graph that displays all the data.
-#         for data_point in range(len(self.labels)):
-#             ax[data_point].barh(1, X[self.labels[data_point]].max(), label="Max Data")
-#             ax[data_point].barh(1, pos[self.labels[data_point]].mean(), label="Has Diabetes Avg")
-#             ax[data_point].barh(1, neg[self.labels[data_point]].mean(), label="Doesn't Have Diabetes Avg")
-#             ax[data_point].barh(1, X[self.labels[data_point]].min(), label="Min Data")
-#             ax[data_point].set_title(self.labels[data_point])
-#             ax[data_point].tick_params(left=False, labelleft=False)  # Remove y-axis tick marks and labels
-#
-#         print('Showing the bar graph plot.')
-#         plt.legend()
-#         plt.show()
-#
-#         # bg = pd.bar_graph(X, neg, pos)
-#         # bg.show()
-#
-#         # # # create an axis
-#         # ax = self.figure.add_subplot(111)
-#
-#         # plot data
-#         # ax.barh(bg)
-#
-#         # refresh canvas
-#         # self.canvas.draw()
-#
-#     def show_scatter_plots(self):
-#         print('Preparing the scatter plots')
-#         ptd = ProcessAndTrainData()
-#         pd = PlotData()
-#         data_frame = ptd.load_data('diabetes.csv')
-#         pd.scatter_plot(data_frame)
+        self.figure = plt.figure()
+
+        # Canvas Widget that displays the 'figure'
+        self.canvas = FigureCanvas(self.figure)
+
+        # Vertical layout (Widgets are stacked vertically)
+        plot_window_layout = QVBoxLayout()
+
+        # Horizontal layout (Widgets are stacked horizontally)
+        plot_selection_layout = QHBoxLayout()
+
+        scatter_plot_groupbox = QGroupBox('Scatter Plot')
+        scatter_plot_groupbox.setFixedWidth(630)
+        scatter_plot_groupbox.setAlignment(Qt.AlignHCenter)
+
+        # Created a stacked layout for the progress bar and the scatter plot button
+        # self.stacked_layout_for_scatter_plot_button_and_progress_bar = QStackedLayout()
+
+        # Define the buttons
+        self.bar_graph_button = QPushButton('Show Bar Graph')
+        self.scatter_plot_button = QPushButton('Show Scatter Plot')
+        self.close_plot_window_button = QPushButton('Close Window')
+
+        # Adding action to the buttons
+        self.bar_graph_button.clicked.connect(self.bar_graph)
+        self.scatter_plot_button.clicked.connect(self.scatter_plot)
+        self.close_plot_window_button.clicked.connect(self.close)
+
+        # Dropdown menu to select which scatter plot tp display
+        self.scatter_plot_dropdown = QComboBox(self)
+
+        # Adding items to the dropdown(ComboBox)
+        self.scatter_plot_dropdown.addItems(self.labels)
+
+        # Defining a label for the dropdown(ComboBox)
+        self.loading_label = QLabel('Scatter Plot Selection')
+
+        # self.progress_bar = QProgressBar(self)
+
+        # layout_size = QRect(0, 0, 380, 25)
+        # self.stacked_layout_for_scatter_plot_button_and_progress_bar.setGeometry(layout_size)
+        self.scatter_plot_dropdown.setFixedWidth(210)
+        # self.bar_graph_button.setFixedWidth(380)
+        # self.scatter_plot_button.setFixedWidth(380)
+        # self.scatter_plot_button.setFixedHeight(25)
+        # self.progress_bar.setFixedHeight(25)
+
+        # Add the progress bar and the scatter plot button to the stacked layout
+        # self.stacked_layout_for_scatter_plot_button_and_progress_bar.addWidget(self.scatter_plot_button)
+        # self.stacked_layout_for_scatter_plot_button_and_progress_bar.addWidget(self.progress_bar)
+        # self.stacked_layout_for_scatter_plot_button_and_progress_bar.setCurrentIndex(0)
+
+        # Adding widgets to the plot selection horizontal layout
+        plot_selection_layout.addWidget(self.bar_graph_button)
+        plot_selection_layout.addWidget(scatter_plot_groupbox)
+        # plot_selection_layout.addWidget(self.scatter_plot_button)
+        # plot_selection_layout.addLayout(self.stacked_layout_for_scatter_plot_button_and_progress_bar)
+        # plot_selection_layout.addWidget(self.scatter_plot_dropdown)
+
+        scatter_plot_groupbox_layout = QHBoxLayout()
+        scatter_plot_groupbox.setLayout(scatter_plot_groupbox_layout)
+
+        scatter_plot_groupbox_layout.addWidget(self.scatter_plot_button)
+        scatter_plot_groupbox_layout.addWidget(self.scatter_plot_dropdown)
+
+        # Adding widgets to the plot window vertical layout
+        plot_window_layout.addWidget(self.canvas)
+        plot_window_layout.addLayout(plot_selection_layout)  # Adding the horizontal layout to the vertical layout
+        plot_window_layout.addWidget(self.close_plot_window_button)
+
+        # Setting the layout
+        self.setLayout(plot_window_layout)
+
+    def bar_graph(self):
+
+        ptd = ProcessAndTrainData()
+        data_frame = ptd.load_data('diabetes.csv')
+        X, y, neg, pos = ptd.prepare_data(data_frame)
+
+        # Clearing old figure
+        self.figure.clear()
+
+        # Plot a bar graph that displays all the data.
+        for data_point in range(len(self.labels)):
+
+            # Create an axis
+            ax = self.figure.add_subplot(8, 1, data_point + 1)
+
+            # Plot data
+            ax.barh(1, X[self.labels[data_point]].max(), label="Max Data")
+            ax.barh(1, pos[self.labels[data_point]].mean(), label="Has Diabetes Avg")
+            ax.barh(1, neg[self.labels[data_point]].mean(), label="Doesn't Have Diabetes Avg")
+            ax.barh(1, X[self.labels[data_point]].min(), label="Min Data")
+            ax.set_title(self.labels[data_point])
+            ax.tick_params(left=False, labelleft=False)  # Remove y-axis tick marks and labels
+
+            print(f'Displaying {self.labels[data_point]} now')
+
+        # Display the legend
+        self.figure.legend()
+
+        # Draw the graph on the canvas
+        self.canvas.draw()
+
+    def scatter_plot(self):
+
+        ptd = ProcessAndTrainData()
+        data_frame = ptd.load_data('diabetes.csv')
+
+        # Clearing old figure
+        self.figure.clear()
+
+        ax = self.figure.add_subplot(1, 1, 1)
+
+        ax.clear()
+
+        column_index = self.scatter_plot_dropdown.currentIndex()
+
+        print(f'\n\nStarting to process the {self.labels[column_index]} column')
+
+        zero_count = 0
+
+        # PLot each data point in the column.
+        for data_point in range(len(data_frame.to_numpy())):
+            # print(column_index, data_point)
+
+            progress_status = int(((data_point + 1) / len(data_frame.to_numpy())) * 100)
+
+            if progress_status <= 100:
+                # self.stacked_layout_for_scatter_plot_button_and_progress_bar.setCurrentIndex(1)
+                print(f'Scatter Plot Loading Progress: {int(((data_point + 1) / len(data_frame.to_numpy())) * 100)}%')
+                self.scatter_plot_button.setText(
+                    f'Loading Plot: {int(((data_point + 1) / len(data_frame.to_numpy())) * 100)}%'
+                )
+            # self.progress_bar.setValue(progress_status)
+
+            # Plot the data points in green when the patient doesn't have diabetes and red then they do.
+            if data_frame.to_numpy()[data_point][8] == 0:  # Does not have diabetes.
+                color = 'green'
+            else:  # Has diabetes.
+                color = 'red'
+
+            # Remove the data points with a 0 value in all columns, EXCEPT pregnancies.
+            if data_frame.to_numpy()[data_point][column_index] > 0 and column_index > 0:
+                ax.scatter(data_frame.to_numpy()[data_point][column_index], data_point, color=color)
+                zero_count += 1
+
+            # Plot all pregnancy data.
+            elif column_index == 0:
+                ax.scatter(data_frame.to_numpy()[data_point][column_index], data_point, color=color)
+                zero_count = len(data_frame.to_numpy())
+
+        # self.stacked_layout_for_scatter_plot_button_and_progress_bar.setCurrentIndex(0)
+        self.scatter_plot_button.setText('Scatter Plot')
+        print(f'Showing the {self.labels[column_index]} plot. ({len(data_frame.to_numpy()) - zero_count}'
+              ' zero points have been dropped)')
+        # ax.legend(['Has diabetes', 'Does not have diabetes'], loc='upper right')
+        # ax.title(self.labels[column_index])
+        # ax.yticks([])  # Remove the y-axis tick marks
+        # print(f'Showing the {self.labels[column]} graph now...')
+        ax.set_title(self.labels[column_index])
+        ax.tick_params(left=False, labelleft=False)  # Remove y-axis tick marks and labels
+
+        self.canvas.draw()
