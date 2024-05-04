@@ -116,7 +116,7 @@ labels = [
 fig, ax = plt.subplots(
     8,
     1,
-    constrained_layout=True,
+    # constrained_layout=True,
     figsize=(10, 6)
 )
 

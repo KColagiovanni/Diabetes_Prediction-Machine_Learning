@@ -25,9 +25,9 @@ class PlotData(QWidget):
         self.setWindowTitle('Plot')
 
         # Define the window geometry
-        self.setGeometry(0, 0, 1000, 600)
+        self.setGeometry(100, 100, 1000, 650)
 
-        self.figure = plt.figure()
+        self.figure = plt.figure(figsize=(900, 500), layout='constrained')
 
         # Canvas Widget that displays the 'figure'
         self.canvas = FigureCanvas(self.figure)
@@ -38,9 +38,9 @@ class PlotData(QWidget):
         # Horizontal layout (Widgets are stacked horizontally)
         plot_selection_layout = QHBoxLayout()
 
-        scatter_plot_groupbox = QGroupBox('Scatter Plot')
+        scatter_plot_groupbox = QGroupBox()
         scatter_plot_groupbox.setFixedWidth(630)
-        scatter_plot_groupbox.setAlignment(Qt.AlignHCenter)
+        # scatter_plot_groupbox.setAlignment(Qt.AlignHCenter)  # Center groupbox text
 
         # Created a stacked layout for the progress bar and the scatter plot button
         # self.stacked_layout_for_scatter_plot_button_and_progress_bar = QStackedLayout()
@@ -62,16 +62,19 @@ class PlotData(QWidget):
         self.scatter_plot_dropdown.addItems(self.labels)
 
         # Defining a label for the dropdown(ComboBox)
-        self.loading_label = QLabel('Scatter Plot Selection')
+        self.scatter_plot_label = QLabel('Scatter Plot Selection')
+        self.scatter_plot_label.setAlignment(Qt.AlignHCenter)
 
-        # self.progress_bar = QProgressBar(self)
+        self.progress_bar = QProgressBar(self)
 
         # layout_size = QRect(0, 0, 380, 25)
         # self.stacked_layout_for_scatter_plot_button_and_progress_bar.setGeometry(layout_size)
         self.scatter_plot_dropdown.setFixedWidth(210)
         # self.bar_graph_button.setFixedWidth(380)
         # self.scatter_plot_button.setFixedWidth(380)
-        # self.scatter_plot_button.setFixedHeight(25)
+        self.bar_graph_button.setFixedHeight(45)
+        self.scatter_plot_button.setFixedHeight(45)
+        self.close_plot_window_button.setFixedHeight(45)
         # self.progress_bar.setFixedHeight(25)
 
         # Add the progress bar and the scatter plot button to the stacked layout
@@ -86,14 +89,16 @@ class PlotData(QWidget):
         # plot_selection_layout.addLayout(self.stacked_layout_for_scatter_plot_button_and_progress_bar)
         # plot_selection_layout.addWidget(self.scatter_plot_dropdown)
 
-        scatter_plot_groupbox_layout = QHBoxLayout()
+        scatter_plot_groupbox_layout = QGridLayout()
         scatter_plot_groupbox.setLayout(scatter_plot_groupbox_layout)
 
-        scatter_plot_groupbox_layout.addWidget(self.scatter_plot_button)
-        scatter_plot_groupbox_layout.addWidget(self.scatter_plot_dropdown)
+        scatter_plot_groupbox_layout.addWidget(self.scatter_plot_button, 0, 0, 2, 1)
+        scatter_plot_groupbox_layout.addWidget(self.scatter_plot_label, 0, 1)
+        scatter_plot_groupbox_layout.addWidget(self.scatter_plot_dropdown, 1, 1)
 
         # Adding widgets to the plot window vertical layout
         plot_window_layout.addWidget(self.canvas)
+        plot_window_layout.addWidget(self.progress_bar)
         plot_window_layout.addLayout(plot_selection_layout)  # Adding the horizontal layout to the vertical layout
         plot_window_layout.addWidget(self.close_plot_window_button)
 
@@ -112,24 +117,36 @@ class PlotData(QWidget):
         # Plot a bar graph that displays all the data.
         for data_point in range(len(self.labels)):
 
+            progress_status = int(((data_point + 1) / len(self.labels)) * 100)
+            self.progress_bar.setValue(progress_status)
+            self.progress_bar.setFormat(f'Processing Data: {progress_status + int(100 / len(self.labels)) + 1}%')
+            # print(f'Scatter Plot Loading Progress: {progress_status + int(len(self.labels)/100 * 100)}%')
+            print(f'Scatter Plot Loading Progress: {progress_status}%')
+            print(int(100 / len(self.labels)))
+
             # Create an axis
             ax = self.figure.add_subplot(8, 1, data_point + 1)
 
+            # self.figure.tight_layout()
+
+            # bar_height = 0.3
+
             # Plot data
-            ax.barh(1, X[self.labels[data_point]].max(), label="Max Data")
-            ax.barh(1, pos[self.labels[data_point]].mean(), label="Has Diabetes Avg")
-            ax.barh(1, neg[self.labels[data_point]].mean(), label="Doesn't Have Diabetes Avg")
-            ax.barh(1, X[self.labels[data_point]].min(), label="Min Data")
-            ax.set_title(self.labels[data_point])
+            ax.barh(1, X[self.labels[data_point]].max(), color='red')#, height=bar_height)#, label="Max Data")
+            ax.barh(1, pos[self.labels[data_point]].mean(), color='blue')#, height=bar_height)#, label="Has Diabetes Avg")
+            ax.barh(1, neg[self.labels[data_point]].mean(), color='orange')#, height=bar_height)#, label="Doesn't Have Diabetes Avg")
+            ax.barh(1, X[self.labels[data_point]].min(), color='green')#, height=bar_height)#, label="Min Data")
+            ax.set_title(self.labels[data_point], loc='left')
             ax.tick_params(left=False, labelleft=False)  # Remove y-axis tick marks and labels
 
             print(f'Displaying {self.labels[data_point]} now')
 
         # Display the legend
-        self.figure.legend()
+        self.figure.legend(['Max Data', 'Has Diabetes Avg', 'Doesn\'t have Diabetes Avg', 'Min Data'])
 
         # Draw the graph on the canvas
         self.canvas.draw()
+        self.progress_bar.reset()
 
     def scatter_plot(self):
 
@@ -158,10 +175,11 @@ class PlotData(QWidget):
             if progress_status <= 100:
                 # self.stacked_layout_for_scatter_plot_button_and_progress_bar.setCurrentIndex(1)
                 print(f'Scatter Plot Loading Progress: {int(((data_point + 1) / len(data_frame.to_numpy())) * 100)}%')
-                self.scatter_plot_button.setText(
-                    f'Loading Plot: {int(((data_point + 1) / len(data_frame.to_numpy())) * 100)}%'
-                )
-            # self.progress_bar.setValue(progress_status)
+                # self.scatter_plot_button.setText(
+                #     f'Loading Plot: {int(((data_point + 1) / len(data_frame.to_numpy())) * 100)}%'
+                # )
+                self.progress_bar.setValue(progress_status)
+                self.progress_bar.setFormat(f'Processing Data: {progress_status + 1}%')
 
             # Plot the data points in green when the patient doesn't have diabetes and red then they do.
             if data_frame.to_numpy()[data_point][8] == 0:  # Does not have diabetes.
@@ -191,3 +209,4 @@ class PlotData(QWidget):
         ax.tick_params(left=False, labelleft=False)  # Remove y-axis tick marks and labels
 
         self.canvas.draw()
+        self.progress_bar.reset()
