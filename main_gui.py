@@ -2,6 +2,7 @@ import sys
 from PyQt5.QtWidgets import *
 from plot_data import PlotData
 from process_and_train_data import ProcessAndTrainData
+import pandas as pd
 
 
 class MainWindow(QMainWindow):
@@ -11,6 +12,7 @@ class MainWindow(QMainWindow):
 
         widget_width = 150
         pos_x = 125
+        self.diabetes_dataset = 'diabetes.csv'
 
         # Define the window title
         self.setWindowTitle('Do you have diabetes?')
@@ -53,19 +55,25 @@ class MainWindow(QMainWindow):
         print('Showing the main window.')
         self.show()
 
+    @staticmethod
+    def load_data(csv_data):
+        return pd.read_csv(csv_data)
+
     def make_prediction(self):
-        ptd = ProcessAndTrainData()
-        data_frame = ptd.load_data('diabetes.csv')
-        X, y, neg, pos = ptd.prepare_data(data_frame)
-        X_train, X_test, y_train, y_test = ptd.train_data(X, y)
-        accuracy_score = ptd.predict_data(X_train, X_test, y_train, y_test)
-        self.accuracy_label.setText(f'Accuracy: {round(accuracy_score * 100, 2)}%')
+        # print(self.load_data(self.diabetes_dataset))
+        self.ptd = ProcessAndTrainData(self.load_data(self.diabetes_dataset))
+        self.ptd.show()
+        # ptd = ProcessAndTrainData()
+        # data_frame = ptd.load_data('diabetes.csv')
+        # X, y, neg, pos = ptd.prepare_data(data_frame)
+        # X_train, X_test, y_train, y_test = ptd.train_data(X, y)
+        # accuracy_score = ptd.predict_data(X_train, X_test, y_train, y_test)
+        # self.accuracy_label.setText(f'Accuracy: {round(accuracy_score * 100, 2)}%')
 
     # @staticmethod
     def show_graphs(self):
-        print('In show_graphs() method')
-        self.pd = PlotData()
-        self.pd.show()
+        self.pldata = PlotData(self.load_data(self.diabetes_dataset))
+        self.pldata.show()
 
     def close_window(self):
 

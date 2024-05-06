@@ -36,16 +36,16 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 # Define the data model
 model = DecisionTreeClassifier()
 # model = LinearRegression()
-# model.fit(X, y)  # Train the model with csv data set
-model.fit(X_train, y_train)  # Train the model with training data set
-prediction = model.predict(X_test)  # Ask for a prediction with test data set
-# prediction = model.predict([should_be_diabetic, should_not_be_diabetic])
+model.fit(X, y)  # Train the model with csv data set
+# model.fit(X_train, y_train)  # Train the model with training data set
+# prediction = model.predict(X_test)  # Ask for a prediction with test data set
+prediction = model.predict([should_be_diabetic, should_not_be_diabetic])
 
 # Calculating the Accuracy Score
-ac_score = accuracy_score(y_test, prediction)
+ac_score = accuracy_score(y, prediction)
 
 # Evaluate the performance of the model
-r2 = r2_score(y_test, prediction)
+# r2 = r2_score(y_test, prediction)
 # mean_sqr_err = mean_squared_error(y_test, prediction)
 # mean_abs_err = mean_absolute_error(y_test, prediction)
 
@@ -87,7 +87,7 @@ print(f'\nDescribe pos:\n{pos.describe()}')
 print(f'\nPrediction(s):\n{prediction}')
 
 # Model Performance
-print(f'\nr2 Score: {r2}')
+# print(f'\nr2 Score: {r2}')
 # print(f'Mean Squared Error: {mean_sqr_err}')
 # print(f'Mean Absolute Error: {mean_abs_err}')
 
@@ -96,7 +96,7 @@ print(f'\nr2 Score: {r2}')
 # print(f'Coefficient: {model.coef_}')
 
 # Print the Accuracy Score
-print(f'Accuracy Score: {ac_score}')
+# print(f'Accuracy Score: {ac_score}')
 
 # _-_-_-_-_-_-_-_-_-_-_ Plot Data _-_-_-_-_-_-_-_-_-_-_
 
