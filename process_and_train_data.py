@@ -4,6 +4,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, r2_score, mean_squared_error, mean_absolute_error
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
 
 
 class ProcessAndTrainData(QWidget):
@@ -12,6 +13,14 @@ class ProcessAndTrainData(QWidget):
         super().__init__()
 
         self.data_frame = data_frame
+        self.left = 100
+        self.top = 100
+        self.width = 450
+        self.height = 300
+
+        self.result_font_color = 'black'
+        self.result_bg_color = 'lightgrey'
+        self.result_margin = '10px'
 
         self.X = self.data_frame.drop(columns=['Outcome'])  # Input data
         self.neg = self.X[self.data_frame['Outcome'] == 0]  # Input data from women who don't have diabetes.
@@ -69,38 +78,92 @@ class ProcessAndTrainData(QWidget):
         should_be_diabetic = [7, 150, 70, 35, 0, 35, 1, 50]
         should_not_be_diabetic = [1, 99, 62, 0, 0, 27, .24, 24]
 
+        self.user_data_list = []
+
+        self.initUI()
+
+    def initUI(self):
         # Define the window title
         self.setWindowTitle('Predict Diabetes')
 
         # Define the window geometry
-        self.setGeometry(100, 100, 450, 300)
+        self.setGeometry(self.left, self.top, self.width, self.height)
+
+        self.create_layout()
 
         # Horizontal layout (Widgets are stacked horizontally)
         predict_window_layout = QVBoxLayout()
 
-        self.outcome_label = QLabel('')
-
-        predict_window_layout.addWidget(self.outcome_label)
-
-        self.default_value_dropdown = QComboBox()
-
-        self.default_value_dropdown.addItems([
-            'Entire Dataset (Default)',
-            'Negative Dataset (Women who don\'t have diabetes)',
-            'Positive Dataset (Women who do have diabetes)'
-        ])
-
-        predict_window_layout.addWidget(self.default_value_dropdown)
-
         # Define groupbox and add it to the layout
         spinbox_groupbox = QGroupBox('Enter Data')
 
+        predict_window_layout.addWidget(self.outcome_label)
+        predict_window_layout.addWidget(self.default_value_dropdown)
         predict_window_layout.addWidget(spinbox_groupbox)
 
         # Vertical layout for the spin boxes (Widgets are stacked horizontally)
         spinbox_layout = QGridLayout()
 
         spinbox_groupbox.setLayout(spinbox_layout)
+
+        # Adding the spin boxes and their labels to the spin box layout
+        spinbox_layout.addWidget(self.pregnancy_spinbox_label, 0, 0)
+        spinbox_layout.addWidget(self.pregnancy_spinbox, 1, 0)
+
+        spinbox_layout.addWidget(self.glucose_spinbox_label, 2, 0)
+        spinbox_layout.addWidget(self.glucose_spinbox, 3, 0)
+
+        spinbox_layout.addWidget(self.blood_pressure_spinbox_label, 4, 0)
+        spinbox_layout.addWidget(self.blood_pressure_spinbox, 5, 0)
+
+        spinbox_layout.addWidget(self.skin_thickness_spinbox_label, 6, 0)
+        spinbox_layout.addWidget(self.skin_thickness_spinbox, 7, 0)
+
+        spinbox_layout.addWidget(self.insulin_spinbox_label, 0, 1)
+        spinbox_layout.addWidget(self.insulin_spinbox, 1, 1)
+
+        spinbox_layout.addWidget(self.bmi_spinbox_label, 2, 1)
+        spinbox_layout.addWidget(self.bmi_spinbox, 3, 1)
+
+        spinbox_layout.addWidget(self.diabetes_pedigree_function_spinbox_label, 4, 1)
+        spinbox_layout.addWidget(self.diabetes_pedigree_function_spinbox, 5, 1)
+
+        spinbox_layout.addWidget(self.age_spinbox_label, 6, 1)
+        spinbox_layout.addWidget(self.age_spinbox, 7, 1)
+
+        spinbox_layout.addWidget(self.predict_button, 8, 0, 1, 2)
+
+        # Adding the button to the layout
+        predict_window_layout.addWidget(self.close_predict_window_button)
+
+        # Setting the layout
+        self.setLayout(predict_window_layout)
+
+
+    def create_layout(self):
+
+        self.outcome_label = QLabel('Result: Waiting for User')
+        self.outcome_label.setFrameStyle(QFrame.Panel)
+        self.outcome_label.setAlignment(Qt.AlignHCenter)
+
+        # Label border
+        self.outcome_label.setStyleSheet(
+            f'color: {self.result_font_color};'
+            f'background-color: {self.result_bg_color};'
+            f'border: 2px solid black;'
+            f'margin: {self.result_margin}'
+        )
+
+        self.outcome_label.setFont(QFont('Default', 14))
+        # self.outcome_label.setStyleSheet('background-color: red')
+
+        self.default_value_dropdown = QComboBox(self)
+
+        self.default_value_dropdown.addItems([
+            'Entire Dataset (Default)',
+            'Negative Dataset (Women who don\'t have diabetes)',
+            'Positive Dataset (Women who do have diabetes)'
+        ])
 
         # Defining the spin boxs and their labels
         self.pregnancy_spinbox_label = QLabel('Pregnancies')
@@ -156,39 +219,13 @@ class ProcessAndTrainData(QWidget):
         self.age_spinbox.setValue(int(self.data_frame[self.labels[7]].mean()))
 
         self.predict_button = QPushButton('Make Prediction')
-        self.predict_button.clicked.connect(self.make_prediction)
+        self.predict_button.clicked.connect(self.prediction_outcome)
 
         # Close window button
         self.close_predict_window_button = QPushButton('Close Window')
 
         # Adding action to the buttons
         self.close_predict_window_button.clicked.connect(self.close)
-
-        # Adding the spin boxes and their labels to the spin box layout
-        spinbox_layout.addWidget(self.pregnancy_spinbox_label, 0, 0)
-        spinbox_layout.addWidget(self.pregnancy_spinbox, 1, 0)
-        spinbox_layout.addWidget(self.glucose_spinbox_label, 2, 0)
-        spinbox_layout.addWidget(self.glucose_spinbox, 3, 0)
-        spinbox_layout.addWidget(self.blood_pressure_spinbox_label, 4, 0)
-        spinbox_layout.addWidget(self.blood_pressure_spinbox, 5, 0)
-        spinbox_layout.addWidget(self.skin_thickness_spinbox_label, 6, 0)
-        spinbox_layout.addWidget(self.skin_thickness_spinbox, 7, 0)
-        spinbox_layout.addWidget(self.insulin_spinbox_label, 0, 1)
-        spinbox_layout.addWidget(self.insulin_spinbox, 1, 1)
-        spinbox_layout.addWidget(self.bmi_spinbox_label, 2, 1)
-        spinbox_layout.addWidget(self.bmi_spinbox, 3, 1)
-        spinbox_layout.addWidget(self.diabetes_pedigree_function_spinbox_label, 4, 1)
-        spinbox_layout.addWidget(self.diabetes_pedigree_function_spinbox, 5, 1)
-        spinbox_layout.addWidget(self.age_spinbox_label, 6, 1)
-        spinbox_layout.addWidget(self.age_spinbox, 7, 1)
-
-        spinbox_layout.addWidget(self.predict_button, 8, 0, 1, 2)
-
-        # Adding the button to the layout
-        predict_window_layout.addWidget(self.close_predict_window_button)
-
-        # Setting the layout
-        self.setLayout(predict_window_layout)
 
     # def prepare_data(self):
         # Prepare Data
@@ -219,6 +256,7 @@ class ProcessAndTrainData(QWidget):
         # print(f'X Test: {X_test}')
         # print(f'y Test: {y_test}')
         print(f'user_values: {user_values}')
+
         # Define the data model
         self.model = DecisionTreeClassifier()
 
@@ -237,30 +275,45 @@ class ProcessAndTrainData(QWidget):
         # Print the Accuracy Score
         # print(f'Accuracy Score: {round(ac_score * 100, 2)}%')
 
+        if prediction[0] == 0:
+            self.result_font_color = 'green'
+        else:
+            self.result_font_color = 'red'
+
+        self.outcome_label.setStyleSheet(
+            f'color: {self.result_font_color};'
+            f'background-color: {self.result_bg_color}'
+        )
+
         self.outcome_label.setText(f'Result: {outcome[prediction[0]]}')  #(Accuracy: {round(ac_score * 100, 2)}%)')
 
-    def persisting_model(self):
+    def create_persisting_model(self):
         # joblib.dump(self.model, )
         pass
 
-    def make_prediction(self):
-        print(f'Pregnancies Value: {self.pregnancy_spinbox.value()}')
-        user_data_list = []
-        user_data_list.append(self.pregnancy_spinbox.value())
-        user_data_list.append(self.glucose_spinbox.value())
-        user_data_list.append(self.blood_pressure_spinbox.value())
-        user_data_list.append(self.skin_thickness_spinbox.value())
-        user_data_list.append(self.insulin_spinbox.value())
-        user_data_list.append(self.bmi_spinbox.value())
-        user_data_list.append(self.diabetes_pedigree_function_spinbox.value())
-        user_data_list.append(self.age_spinbox.value())
+    def load_persisting_model(self):
+        # return joblib(self.model, )
+        pass
 
-        print(f'X: {self.X}')
-        print(f'y: {self.y}')
-        print(f'user_data_list: {user_data_list}')
+    def prediction_outcome(self):
+
+        self.user_data_list = [
+            self.pregnancy_spinbox.value(),
+            self.glucose_spinbox.value(),
+            self.blood_pressure_spinbox.value(),
+            self.skin_thickness_spinbox.value(),
+            self.insulin_spinbox.value(),
+            self.bmi_spinbox.value(),
+            self.diabetes_pedigree_function_spinbox.value(),
+            self.age_spinbox.value()
+        ]
+
+        # print(f'X: {self.X}')
+        # print(f'y: {self.y}')
+        # print(f'user_data_list: {self.user_data_list}')
 
         # print(f'self.train_data(self.prepare_data()[0], self.prepare_data()[1])[0] is: {self.train_data(self.prepare_data()[0], self.prepare_data()[1])[0],}')
         # print(f'self.train_data(self.prepare_data()[0], self.prepare_data()[1])[1] is: {self.train_data(self.prepare_data()[0], self.prepare_data()[1])[1],}')
         # print(f'self.train_data(self.prepare_data()[0], self.prepare_data()[1])[2] is: {self.train_data(self.prepare_data()[0], self.prepare_data()[1])[2],}')
         # print(f'self.train_data(self.prepare_data()[0], self.prepare_data()[1])[3] is: {self.train_data(self.prepare_data()[0], self.prepare_data()[1])[3],}')
-        self.predict_data([user_data_list])
+        self.predict_data([self.user_data_list])

@@ -1,11 +1,12 @@
 import sys
+from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from plot_data import PlotData
 from process_and_train_data import ProcessAndTrainData
 import pandas as pd
 
 
-class MainWindow(QMainWindow):
+class MainWindow(QWidget):
 
     def __init__(self):
         super().__init__()
@@ -18,42 +19,26 @@ class MainWindow(QMainWindow):
         self.setWindowTitle('Do you have diabetes?')
 
         # Define the window geometry
-        self.setGeometry(0, 0, 400, 350)
+        self.setGeometry(0, 0, 400, 150)
 
-        # Define accuracy label widget
-        self.accuracy_label = QLabel("Accuracy: ", self)
-
-        # Defining position and size of label
-        self.accuracy_label.move(pos_x, 250)
-        self.accuracy_label.resize(widget_width, 25)
-
-        # Label border
-        self.accuracy_label.setStyleSheet("border: 1px solid black;")
+        main_window_layout = QGridLayout()
 
         # Show scatter plots button
-        self.show_graphs_button = QPushButton(self)
-        self.show_graphs_button.setText('Show Graphs')
-        self.show_graphs_button.setFixedWidth(widget_width)
-        self.show_graphs_button.move(pos_x, 150)
-        self.show_graphs_button.clicked.connect(self.show_graphs)
+        show_graphs_button = QPushButton('Show Graphs')
+        show_graphs_button.clicked.connect(self.show_graphs)
+        main_window_layout.addWidget(show_graphs_button, 0, 0)
 
         # Predict data button
-        self.predict_button = QPushButton(self)
-        self.predict_button.setText('Predict')
-        self.predict_button.setFixedWidth(widget_width)
-        self.predict_button.move(pos_x, 200)
-        self.predict_button.clicked.connect(self.make_prediction)
+        predict_button = QPushButton('Predict')
+        predict_button.clicked.connect(self.make_prediction)
+        main_window_layout.addWidget(predict_button, 0, 1)
 
         # Close button
-        self.close_button = QPushButton(self)
-        self.close_button.setText('Close')
-        self.close_button.setFixedWidth(widget_width)
-        self.close_button.move(pos_x, 300)
-        self.close_button.clicked.connect(self.close_window)
+        close_button = QPushButton('Close')
+        close_button.clicked.connect(self.close_window)
+        main_window_layout.addWidget(close_button, 1, 0, 1, 2)
 
-        # Show the window and all the widgets
-        print('Showing the main window.')
-        self.show()
+        self.setLayout(main_window_layout)
 
     @staticmethod
     def load_data(csv_data):
@@ -89,7 +74,11 @@ if __name__ == '__main__':
     App = QApplication(sys.argv)
 
     # Create the instance of the Window
-    window = MainWindow()
+    main_window = MainWindow()
+
+    # Show the window and all the widgets
+    print('Showing the main window.')
+    main_window.show()
 
     # Start the app loop
-    sys.exit(App.exec())
+    App.exec()
