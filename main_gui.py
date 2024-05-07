@@ -11,8 +11,6 @@ class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
 
-        widget_width = 150
-        pos_x = 125
         self.diabetes_dataset = 'diabetes.csv'
 
         # Define the window title

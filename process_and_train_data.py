@@ -74,31 +74,64 @@ class ProcessAndTrainData(QWidget):
             self.pos[self.labels[7]].mean()
         ]
 
-        # _-_-_-_-_-_-_-_-_-_-_-_-_ Test Data _-_-_-_-_-_-_-_-_-_-_-_-_
-        should_be_diabetic = [7, 150, 70, 35, 0, 35, 1, 50]
-        should_not_be_diabetic = [1, 99, 62, 0, 0, 27, .24, 24]
-
         self.user_data_list = []
+
+        # Defining Label Widgets
+        self.outcome_label = QLabel('Waiting for User to Enter Data')
+        self.pregnancy_spinbox_label = QLabel('Pregnancies')
+        self.glucose_spinbox_label = QLabel('Glucose')
+        self.blood_pressure_spinbox_label = QLabel('Blood Pressure')
+        self.skin_thickness_spinbox_label = QLabel('Skin Thickness')
+        self.insulin_spinbox_label = QLabel('Insulin')
+        self.bmi_spinbox_label = QLabel('Body Mass Index')
+        self.diabetes_pedigree_function_spinbox_label = QLabel('Diabetes Pedigree Function')
+        self.age_spinbox_label = QLabel('Age')
+        self.dataset_selection_label = QLabel('Dataset: ')
+
+        # Defining Spinbox Widgets
+        self.dataset_selection_dropdown = QComboBox(self)
+        self.pregnancy_spinbox = QSpinBox(self)
+        self.glucose_spinbox = QSpinBox(self)
+        self.blood_pressure_spinbox = QSpinBox(self)
+        self.skin_thickness_spinbox = QSpinBox(self)
+        self.insulin_spinbox = QSpinBox(self)
+        self.bmi_spinbox = QDoubleSpinBox(self)
+        self.diabetes_pedigree_function_spinbox = QDoubleSpinBox(self)
+        self.age_spinbox = QSpinBox(self)
+
+        # Defining Button Widgets
+        self.predict_button = QPushButton('Make Prediction')
+        self.close_predict_window_button = QPushButton('Close Window')
+
+        # Define the data model
+        self.model = DecisionTreeClassifier()
 
         self.initUI()
 
     def initUI(self):
+
         # Define the window title
         self.setWindowTitle('Predict Diabetes')
 
-        # Define the window geometry
+        # Define the prediction window geometry
         self.setGeometry(self.left, self.top, self.width, self.height)
 
         self.create_layout()
 
-        # Horizontal layout (Widgets are stacked horizontally)
+        # Vertical layout for the window widgets
         predict_window_layout = QVBoxLayout()
 
+        # Horizontal layout for the dataset selection and it's label
+        dataset_selection_layout = QHBoxLayout()
+
         # Define groupbox and add it to the layout
-        spinbox_groupbox = QGroupBox('Enter Data')
+        spinbox_groupbox = QGroupBox('Prediction Data')
+
+        dataset_selection_layout.addWidget(self.dataset_selection_label)
+        dataset_selection_layout.addWidget(self.dataset_selection_dropdown)
 
         predict_window_layout.addWidget(self.outcome_label)
-        predict_window_layout.addWidget(self.default_value_dropdown)
+        predict_window_layout.addLayout(dataset_selection_layout)
         predict_window_layout.addWidget(spinbox_groupbox)
 
         # Vertical layout for the spin boxes (Widgets are stacked horizontally)
@@ -139,109 +172,111 @@ class ProcessAndTrainData(QWidget):
         # Setting the layout
         self.setLayout(predict_window_layout)
 
-
     def create_layout(self):
 
-        self.outcome_label = QLabel('Result: Waiting for User')
-        self.outcome_label.setFrameStyle(QFrame.Panel)
-        self.outcome_label.setAlignment(Qt.AlignHCenter)
-
-        # Label border
+        self.outcome_label.setFont(QFont('Default', 14))
         self.outcome_label.setStyleSheet(
             f'color: {self.result_font_color};'
             f'background-color: {self.result_bg_color};'
             f'border: 2px solid black;'
             f'margin: {self.result_margin}'
         )
+        self.outcome_label.setFrameStyle(QFrame.Panel)
+        self.outcome_label.setAlignment(Qt.AlignCenter)
 
-        self.outcome_label.setFont(QFont('Default', 14))
-        # self.outcome_label.setStyleSheet('background-color: red')
-
-        self.default_value_dropdown = QComboBox(self)
-
-        self.default_value_dropdown.addItems([
-            'Entire Dataset (Default)',
-            'Negative Dataset (Women who don\'t have diabetes)',
-            'Positive Dataset (Women who do have diabetes)'
+        self.dataset_selection_dropdown.addItems([
+            'Entire Dataset Average (Default)',
+            'Negative Dataset Average (Women who don\'t have diabetes)',
+            'Positive Dataset Average (Women who do have diabetes)',
+            'Passing Values'
         ])
+        self.dataset_selection_dropdown.currentIndexChanged.connect(self.get_current_selection)
 
         # Defining the spin boxs and their labels
-        self.pregnancy_spinbox_label = QLabel('Pregnancies')
-        self.pregnancy_spinbox = QSpinBox(self)
         self.pregnancy_spinbox.setMinimum(self.data_frame[self.labels[0]].min())
         self.pregnancy_spinbox.setMaximum(self.data_frame[self.labels[0]].max())
         self.pregnancy_spinbox.setValue(int(self.data_frame[self.labels[0]].mean()))
 
-        self.glucose_spinbox_label = QLabel('Glucose')
-        self.glucose_spinbox = QSpinBox(self)
         self.glucose_spinbox.setMinimum(self.data_frame[self.labels[1]].min())
         self.glucose_spinbox.setMaximum(self.data_frame[self.labels[1]].max())
         self.glucose_spinbox.setValue(int(self.data_frame[self.labels[1]].mean()))
 
-        self.blood_pressure_spinbox_label = QLabel('Blood Pressure')
-        self.blood_pressure_spinbox = QSpinBox(self)
         self.blood_pressure_spinbox.setMinimum(self.data_frame[self.labels[2]].min())
         self.blood_pressure_spinbox.setMaximum(self.data_frame[self.labels[2]].max())
         self.blood_pressure_spinbox.setValue(int(self.data_frame[self.labels[2]].mean()))
 
-        self.skin_thickness_spinbox_label = QLabel('Skin Thickness')
-        self.skin_thickness_spinbox = QSpinBox(self)
         self.skin_thickness_spinbox.setMinimum(self.data_frame[self.labels[3]].min())
         self.skin_thickness_spinbox.setMaximum(self.data_frame[self.labels[3]].max())
         self.skin_thickness_spinbox.setValue(int(self.data_frame[self.labels[3]].mean()))
 
-        self.insulin_spinbox_label = QLabel('Insulin')
-        self.insulin_spinbox = QSpinBox(self)
         self.insulin_spinbox.setMinimum(self.data_frame[self.labels[4]].min())
         self.insulin_spinbox.setMaximum(self.data_frame[self.labels[4]].max())
         self.insulin_spinbox.setValue(int(self.data_frame[self.labels[4]].mean()))
 
-        self.bmi_spinbox_label = QLabel('Body Mass Index')
-        self.bmi_spinbox = QDoubleSpinBox(self)
         self.bmi_spinbox.setDecimals(1)
         self.bmi_spinbox.setStepType(QAbstractSpinBox.AdaptiveDecimalStepType)
         self.bmi_spinbox.setMinimum(float(self.data_frame[self.labels[5]].min()))
         self.bmi_spinbox.setMaximum(float(self.data_frame[self.labels[5]].max()))
         self.bmi_spinbox.setValue(float(self.data_frame[self.labels[5]].mean()))
 
-        self.diabetes_pedigree_function_spinbox_label = QLabel('Diabetes Pedigree Function')
-        self.diabetes_pedigree_function_spinbox = QDoubleSpinBox(self)
         self.diabetes_pedigree_function_spinbox.setDecimals(2)
         self.diabetes_pedigree_function_spinbox.setStepType(QAbstractSpinBox.AdaptiveDecimalStepType)
         self.diabetes_pedigree_function_spinbox.setMinimum(self.data_frame[self.labels[6]].min())
         self.diabetes_pedigree_function_spinbox.setMaximum(self.data_frame[self.labels[6]].max())
         self.diabetes_pedigree_function_spinbox.setValue(float(self.data_frame[self.labels[6]].mean()))
 
-        self.age_spinbox_label = QLabel('Age')
-        self.age_spinbox = QSpinBox(self)
         self.age_spinbox.setMinimum(self.data_frame[self.labels[7]].min())
         self.age_spinbox.setMaximum(self.data_frame[self.labels[7]].max())
         self.age_spinbox.setValue(int(self.data_frame[self.labels[7]].mean()))
 
-        self.predict_button = QPushButton('Make Prediction')
         self.predict_button.clicked.connect(self.prediction_outcome)
-
-        # Close window button
-        self.close_predict_window_button = QPushButton('Close Window')
 
         # Adding action to the buttons
         self.close_predict_window_button.clicked.connect(self.close)
 
-    # def prepare_data(self):
-        # Prepare Data
+    def get_current_selection(self):
 
-        # # Print data from data frames
-        # print(f'Min Values: {X.min().to_numpy()}')
-        # print(f'Avg Neg Values: {neg.mean().to_numpy()}')
-        # print(f'Avg Pos Values: {pos.mean().to_numpy()}')
-        # print(f'Max Values: {X.max().to_numpy()}')
-        #
-        # # Describe DF
-        # print(f'\nDescribe DF:\n{X.describe()}')
-        # print(f'\nDescribe neg:\n{neg.describe()}')
-        # print(f'\nDescribe pos:\n{pos.describe()}')
+        print('Current Index: ', self.dataset_selection_dropdown.currentIndex())
 
-        # return X, y, neg, pos
+        if self.dataset_selection_dropdown.currentIndex() == 0:
+            self.pregnancy_spinbox.setValue(int(self.X[self.labels[0]].mean()))
+            self.glucose_spinbox.setValue(int(self.X[self.labels[1]].mean()))
+            self.blood_pressure_spinbox.setValue(int(self.X[self.labels[2]].mean()))
+            self.skin_thickness_spinbox.setValue(int(self.X[self.labels[3]].mean()))
+            self.insulin_spinbox.setValue(int(self.X[self.labels[4]].mean()))
+            self.bmi_spinbox.setValue(float(self.X[self.labels[5]].mean()))
+            self.diabetes_pedigree_function_spinbox.setValue(float(self.X[self.labels[6]].mean()))
+            self.age_spinbox.setValue(int(self.X[self.labels[7]].mean()))
+
+        if self.dataset_selection_dropdown.currentIndex() == 1:
+            self.pregnancy_spinbox.setValue(int(self.neg[self.labels[0]].mean()))
+            self.glucose_spinbox.setValue(int(self.neg[self.labels[1]].mean()))
+            self.blood_pressure_spinbox.setValue(int(self.neg[self.labels[2]].mean()))
+            self.skin_thickness_spinbox.setValue(int(self.neg[self.labels[3]].mean()))
+            self.insulin_spinbox.setValue(int(self.neg[self.labels[4]].mean()))
+            self.bmi_spinbox.setValue(float(self.neg[self.labels[5]].mean()))
+            self.diabetes_pedigree_function_spinbox.setValue(float(self.neg[self.labels[6]].mean()))
+            self.age_spinbox.setValue(int(self.neg[self.labels[7]].mean()))
+
+        if self.dataset_selection_dropdown.currentIndex() == 2:
+            self.pregnancy_spinbox.setValue(int(self.pos[self.labels[0]].mean()))
+            self.glucose_spinbox.setValue(int(self.pos[self.labels[1]].mean()))
+            self.blood_pressure_spinbox.setValue(int(self.pos[self.labels[2]].mean()))
+            self.skin_thickness_spinbox.setValue(int(self.pos[self.labels[3]].mean()))
+            self.insulin_spinbox.setValue(int(self.pos[self.labels[4]].mean()))
+            self.bmi_spinbox.setValue(float(self.pos[self.labels[5]].mean()))
+            self.diabetes_pedigree_function_spinbox.setValue(float(self.pos[self.labels[6]].mean()))
+            self.age_spinbox.setValue(int(self.pos[self.labels[7]].mean()))
+
+        if self.dataset_selection_dropdown.currentIndex() == 3:
+            self.pregnancy_spinbox.setValue(2)
+            self.glucose_spinbox.setValue(100)
+            self.blood_pressure_spinbox.setValue(65)
+            self.skin_thickness_spinbox.setValue(20)
+            self.insulin_spinbox.setValue(70)
+            self.bmi_spinbox.setValue(25.0)
+            self.diabetes_pedigree_function_spinbox.setValue(0.40)
+            self.age_spinbox.setValue(45)
 
     @staticmethod
     def train_data(X, y):
@@ -257,9 +292,6 @@ class ProcessAndTrainData(QWidget):
         # print(f'y Test: {y_test}')
         print(f'user_values: {user_values}')
 
-        # Define the data model
-        self.model = DecisionTreeClassifier()
-
         # model.fit(X_train, y_train)  # Train the model with training data set
         self.model.fit(self.X.values, self.y.values)  # Train the model with training data set
         prediction = self.model.predict(user_values)  # Ask for a prediction with test data set
@@ -270,7 +302,7 @@ class ProcessAndTrainData(QWidget):
         # Print the prediction(s)
         print(f'\nPrediction:\n{prediction}')
 
-        outcome = ['Does not have diabetes', 'Has diabetes']
+        outcome = ['You Do Not Have Diabetes', 'You Have Diabetes']
 
         # Print the Accuracy Score
         # print(f'Accuracy Score: {round(ac_score * 100, 2)}%')
@@ -285,7 +317,7 @@ class ProcessAndTrainData(QWidget):
             f'background-color: {self.result_bg_color}'
         )
 
-        self.outcome_label.setText(f'Result: {outcome[prediction[0]]}')  #(Accuracy: {round(ac_score * 100, 2)}%)')
+        self.outcome_label.setText(outcome[prediction[0]])  # (Accuracy: {round(ac_score * 100, 2)}%)')
 
     def create_persisting_model(self):
         # joblib.dump(self.model, )
