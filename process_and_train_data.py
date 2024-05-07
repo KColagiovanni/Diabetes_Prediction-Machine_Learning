@@ -1,10 +1,12 @@
 import pandas as pd
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import train_test_split
+import joblib
 from sklearn.metrics import accuracy_score, r2_score, mean_squared_error, mean_absolute_error
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
+import os
 
 
 class ProcessAndTrainData(QWidget):
@@ -20,12 +22,17 @@ class ProcessAndTrainData(QWidget):
 
         self.result_font_color = 'black'
         self.result_bg_color = 'lightgrey'
-        self.result_margin = '10px'
+        self.result_padding = '10px'
+        self.result_border_thickness = '2px'
 
         self.X = self.data_frame.drop(columns=['Outcome'])  # Input data
         self.neg = self.X[self.data_frame['Outcome'] == 0]  # Input data from women who don't have diabetes.
         self.pos = self.X[self.data_frame['Outcome'] == 1]  # Input data from women who do have diabetes.
         self.y = self.data_frame['Outcome']  # Output data
+
+        self.training_sample_size = 0.2
+
+        self.persisting_model = 'diabetes_predictions.joblib'
 
         self.labels = [
             'Pregnancies',
@@ -87,6 +94,10 @@ class ProcessAndTrainData(QWidget):
         self.diabetes_pedigree_function_spinbox_label = QLabel('Diabetes Pedigree Function')
         self.age_spinbox_label = QLabel('Age')
         self.dataset_selection_label = QLabel('Dataset: ')
+        self.training_model_accuracy_label = QLabel('Training Model Accuracy:')
+        self.horizontal_line1 = QLabel()
+        self.horizontal_line2 = QLabel()
+        self.horizontal_line3 = QLabel()
 
         # Defining Spinbox Widgets
         self.dataset_selection_dropdown = QComboBox(self)
@@ -101,11 +112,13 @@ class ProcessAndTrainData(QWidget):
 
         # Defining Button Widgets
         self.predict_button = QPushButton('Make Prediction')
+        self.retrain_model_button = QPushButton('Retrain Model')
         self.close_predict_window_button = QPushButton('Close Window')
 
-        # Define the data model
-        self.model = DecisionTreeClassifier()
+        # Define data models
+        self.training_model = DecisionTreeClassifier()
 
+        # Calling the method that initializes the User Interface layouts
         self.initUI()
 
     def initUI(self):
@@ -116,7 +129,8 @@ class ProcessAndTrainData(QWidget):
         # Define the prediction window geometry
         self.setGeometry(self.left, self.top, self.width, self.height)
 
-        self.create_layout()
+        # Calling the method that creates the
+        self.create_widgets()
 
         # Vertical layout for the window widgets
         predict_window_layout = QVBoxLayout()
@@ -124,19 +138,21 @@ class ProcessAndTrainData(QWidget):
         # Horizontal layout for the dataset selection and it's label
         dataset_selection_layout = QHBoxLayout()
 
+        # Horizontal layout for the training accuracy button and label
+        training_accuracy_layout = QHBoxLayout()
+
         # Define groupbox and add it to the layout
-        spinbox_groupbox = QGroupBox('Prediction Data')
+        spinbox_groupbox = QGroupBox()
 
         dataset_selection_layout.addWidget(self.dataset_selection_label)
         dataset_selection_layout.addWidget(self.dataset_selection_dropdown)
-
         predict_window_layout.addWidget(self.outcome_label)
+        predict_window_layout.addWidget(self.horizontal_line1)
         predict_window_layout.addLayout(dataset_selection_layout)
         predict_window_layout.addWidget(spinbox_groupbox)
 
         # Vertical layout for the spin boxes (Widgets are stacked horizontally)
         spinbox_layout = QGridLayout()
-
         spinbox_groupbox.setLayout(spinbox_layout)
 
         # Adding the spin boxes and their labels to the spin box layout
@@ -166,23 +182,36 @@ class ProcessAndTrainData(QWidget):
 
         spinbox_layout.addWidget(self.predict_button, 8, 0, 1, 2)
 
+        predict_window_layout.addWidget(self.horizontal_line2)
+
+        training_accuracy_layout.addWidget(self.retrain_model_button)
+        training_accuracy_layout.addWidget(self.training_model_accuracy_label)
+
+        predict_window_layout.addLayout(training_accuracy_layout)
+
+        predict_window_layout.addWidget(self.horizontal_line3)
+
         # Adding the button to the layout
         predict_window_layout.addWidget(self.close_predict_window_button)
 
         # Setting the layout
         self.setLayout(predict_window_layout)
 
-    def create_layout(self):
+    def create_widgets(self):
 
         self.outcome_label.setFont(QFont('Default', 14))
+        self.outcome_label.setFrameStyle(QFrame.StyledPanel)
+        self.outcome_label.setAlignment(Qt.AlignCenter)
         self.outcome_label.setStyleSheet(
             f'color: {self.result_font_color};'
             f'background-color: {self.result_bg_color};'
-            f'border: 2px solid black;'
-            f'margin: {self.result_margin}'
+            f'border: {self.result_border_thickness} solid {self.result_font_color};'
+            f'padding: {self.result_padding}'
         )
-        self.outcome_label.setFrameStyle(QFrame.Panel)
-        self.outcome_label.setAlignment(Qt.AlignCenter)
+
+        self.horizontal_line1.setFrameStyle(QFrame.HLine)
+        self.horizontal_line2.setFrameStyle(QFrame.HLine)
+        self.horizontal_line3.setFrameStyle(QFrame.HLine)
 
         self.dataset_selection_dropdown.addItems([
             'Entire Dataset Average (Default)',
@@ -190,7 +219,9 @@ class ProcessAndTrainData(QWidget):
             'Positive Dataset Average (Women who do have diabetes)',
             'Passing Values'
         ])
-        self.dataset_selection_dropdown.currentIndexChanged.connect(self.get_current_selection)
+        self.dataset_selection_dropdown.currentIndexChanged.connect(
+            self.get_current_dataset_selection_dropdown_selection
+        )
 
         # Defining the spin boxs and their labels
         self.pregnancy_spinbox.setMinimum(self.data_frame[self.labels[0]].min())
@@ -231,13 +262,16 @@ class ProcessAndTrainData(QWidget):
 
         self.predict_button.clicked.connect(self.prediction_outcome)
 
+        self.retrain_model_button.clicked.connect(self.train_model_and_check_accuracy_using_training_data)
+
         # Adding action to the buttons
         self.close_predict_window_button.clicked.connect(self.close)
 
-    def get_current_selection(self):
+        self.train_model_and_check_accuracy_using_training_data()
 
-        print('Current Index: ', self.dataset_selection_dropdown.currentIndex())
+    def get_current_dataset_selection_dropdown_selection(self):
 
+        # Set spin boxes to the average values of the entire dataset if the user selects if from the dropdown
         if self.dataset_selection_dropdown.currentIndex() == 0:
             self.pregnancy_spinbox.setValue(int(self.X[self.labels[0]].mean()))
             self.glucose_spinbox.setValue(int(self.X[self.labels[1]].mean()))
@@ -248,6 +282,8 @@ class ProcessAndTrainData(QWidget):
             self.diabetes_pedigree_function_spinbox.setValue(float(self.X[self.labels[6]].mean()))
             self.age_spinbox.setValue(int(self.X[self.labels[7]].mean()))
 
+        # Set spin boxes to the average values of the negative (women who don't have diabetes) dataset if the user
+        # selects if from the dropdown
         if self.dataset_selection_dropdown.currentIndex() == 1:
             self.pregnancy_spinbox.setValue(int(self.neg[self.labels[0]].mean()))
             self.glucose_spinbox.setValue(int(self.neg[self.labels[1]].mean()))
@@ -258,6 +294,8 @@ class ProcessAndTrainData(QWidget):
             self.diabetes_pedigree_function_spinbox.setValue(float(self.neg[self.labels[6]].mean()))
             self.age_spinbox.setValue(int(self.neg[self.labels[7]].mean()))
 
+        # Set spin boxes to the average values of the positive (women who do have diabetes) dataset if the user selects
+        # if from the dropdown
         if self.dataset_selection_dropdown.currentIndex() == 2:
             self.pregnancy_spinbox.setValue(int(self.pos[self.labels[0]].mean()))
             self.glucose_spinbox.setValue(int(self.pos[self.labels[1]].mean()))
@@ -268,6 +306,7 @@ class ProcessAndTrainData(QWidget):
             self.diabetes_pedigree_function_spinbox.setValue(float(self.pos[self.labels[6]].mean()))
             self.age_spinbox.setValue(int(self.pos[self.labels[7]].mean()))
 
+        # Set spin boxes to values that will not have diabetes if the user selects if from the dropdown
         if self.dataset_selection_dropdown.currentIndex() == 3:
             self.pregnancy_spinbox.setValue(2)
             self.glucose_spinbox.setValue(100)
@@ -278,34 +317,64 @@ class ProcessAndTrainData(QWidget):
             self.diabetes_pedigree_function_spinbox.setValue(0.40)
             self.age_spinbox.setValue(45)
 
-    @staticmethod
-    def train_data(X, y):
-        # Split the data set into two random sets, one for training, one for testing.
-        return train_test_split(X, y, test_size=0.2)  # returns X_train, X_test, y_train, y_test (in that order)
+    def split_training_data(self):
+        # Split the data set into two random sets, one for training, one for testing. Returns X_train, X_test, y_train,
+        # y_test (in that order)
+        return train_test_split(self.X, self.y, test_size=self.training_sample_size)
 
-    # def predict_data(self, X_train, X_test, y_train, y_test, user_values):
-    def predict_data(self, user_values):
+    def train_model_and_check_accuracy_using_training_data(self):
 
-        # print(f'X Train: {X_train}')
-        # print(f'y Train: {y_train}')
-        # print(f'X Test: {X_test}')
-        # print(f'y Test: {y_test}')
-        print(f'user_values: {user_values}')
+        X_train, X_test, y_train, y_test = self.split_training_data()
 
-        # model.fit(X_train, y_train)  # Train the model with training data set
-        self.model.fit(self.X.values, self.y.values)  # Train the model with training data set
-        prediction = self.model.predict(user_values)  # Ask for a prediction with test data set
+        self.training_model.fit(X_train, y_train)  # Train the model with training dataset
+
+        prediction = self.training_model.predict(X_test.values)  # Get a prediction with test dataset
 
         # Calculating the Accuracy Score
-        # ac_score = accuracy_score(y, prediction)
+        ac_score = accuracy_score(y_test, prediction)
 
-        # Print the prediction(s)
-        print(f'\nPrediction:\n{prediction}')
+        # Print the Accuracy Score
+        print(f'Accuracy Score: {round(ac_score * 100, 2)}%')
+
+        self.training_model_accuracy_label.setText(f'Training Model Accuracy: {round(ac_score * 100, 2)}%')
+
+        self.save_persisting_model()
+
+    def save_persisting_model(self):
+        joblib.dump(self.training_model, self.persisting_model)
+        print(f'"{self.persisting_model}" was saved to {os.getcwd()}.')
+
+    def load_persisting_model(self):
+
+        try:
+            load_model = joblib.load(self.persisting_model)
+
+        except FileNotFoundError:
+            print()
+            print('?!' * 60)
+            print(f'"{self.persisting_model}" was not found in {os.getcwd()}')
+            # print('This shouldn\'t have happened, it may be fixed by doing the following:')
+            # print('     - Run the app again and click the "Train Model" button before the "Make Prediction" button.')
+            print('?!' * 60)
+            quit()
+
+            # --------------------- Possible extra -----------------------
+            # Add a warning message that calls the save_persisting_model() method if the user clicks yes
+
+        else:
+            return load_model
+
+
+    def make_prediction_using_user_entered_data(self, user_values):
+
+        trained_model = self.load_persisting_model()
+
+        prediction = trained_model.predict(user_values)  # Ask for a prediction using the user data set
 
         outcome = ['You Do Not Have Diabetes', 'You Have Diabetes']
 
-        # Print the Accuracy Score
-        # print(f'Accuracy Score: {round(ac_score * 100, 2)}%')
+        # Print the prediction(s)
+        print(f'Prediction: {outcome[prediction[0]]}')
 
         if prediction[0] == 0:
             self.result_font_color = 'green'
@@ -314,18 +383,12 @@ class ProcessAndTrainData(QWidget):
 
         self.outcome_label.setStyleSheet(
             f'color: {self.result_font_color};'
-            f'background-color: {self.result_bg_color}'
+            f'background-color: {self.result_bg_color};'
+            f'border: {self.result_border_thickness} solid {self.result_font_color};'
+            f'padding: {self.result_padding}'
         )
 
         self.outcome_label.setText(outcome[prediction[0]])  # (Accuracy: {round(ac_score * 100, 2)}%)')
-
-    def create_persisting_model(self):
-        # joblib.dump(self.model, )
-        pass
-
-    def load_persisting_model(self):
-        # return joblib(self.model, )
-        pass
 
     def prediction_outcome(self):
 
@@ -340,12 +403,4 @@ class ProcessAndTrainData(QWidget):
             self.age_spinbox.value()
         ]
 
-        # print(f'X: {self.X}')
-        # print(f'y: {self.y}')
-        # print(f'user_data_list: {self.user_data_list}')
-
-        # print(f'self.train_data(self.prepare_data()[0], self.prepare_data()[1])[0] is: {self.train_data(self.prepare_data()[0], self.prepare_data()[1])[0],}')
-        # print(f'self.train_data(self.prepare_data()[0], self.prepare_data()[1])[1] is: {self.train_data(self.prepare_data()[0], self.prepare_data()[1])[1],}')
-        # print(f'self.train_data(self.prepare_data()[0], self.prepare_data()[1])[2] is: {self.train_data(self.prepare_data()[0], self.prepare_data()[1])[2],}')
-        # print(f'self.train_data(self.prepare_data()[0], self.prepare_data()[1])[3] is: {self.train_data(self.prepare_data()[0], self.prepare_data()[1])[3],}')
-        self.predict_data([self.user_data_list])
+        self.make_prediction_using_user_entered_data([self.user_data_list])
