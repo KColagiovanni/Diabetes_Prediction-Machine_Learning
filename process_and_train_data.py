@@ -1,8 +1,7 @@
-import pandas as pd
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import train_test_split
 import joblib
-from sklearn.metrics import accuracy_score, r2_score, mean_squared_error, mean_absolute_error
+from sklearn.metrics import accuracy_score
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
@@ -21,7 +20,7 @@ class ProcessAndTrainData(QWidget):
         self.height = 300
 
         self.result_font_color = 'black'
-        self.result_bg_color = 'lightgrey'
+        self.result_bg_color = 'lightgray'
         self.result_padding = '10px'
         self.result_border_thickness = '2px'
 
@@ -43,42 +42,6 @@ class ProcessAndTrainData(QWidget):
             'BMI',
             'DiabetesPedigreeFunction',
             'Age'
-        ]
-
-        # Average values from entire dataset
-        self.all_data_mean_values = [
-            self.data_frame[self.labels[0]].mean(),
-            self.data_frame[self.labels[1]].mean(),
-            self.data_frame[self.labels[2]].mean(),
-            self.data_frame[self.labels[3]].mean(),
-            self.data_frame[self.labels[4]].mean(),
-            self.data_frame[self.labels[5]].mean(),
-            self.data_frame[self.labels[6]].mean(),
-            self.data_frame[self.labels[7]].mean()
-        ]
-
-        # Average values from negative (no diabetes) dataset
-        self.negative_mean_values = [
-            self.neg[self.labels[0]].mean(),
-            self.neg[self.labels[1]].mean(),
-            self.neg[self.labels[2]].mean(),
-            self.neg[self.labels[3]].mean(),
-            self.neg[self.labels[4]].mean(),
-            self.neg[self.labels[5]].mean(),
-            self.neg[self.labels[6]].mean(),
-            self.neg[self.labels[7]].mean()
-        ]
-
-        # Average values from positive (has diabetes) dataset
-        self.positive_mean_values = [
-            self.pos[self.labels[0]].mean(),
-            self.pos[self.labels[1]].mean(),
-            self.pos[self.labels[2]].mean(),
-            self.pos[self.labels[3]].mean(),
-            self.pos[self.labels[4]].mean(),
-            self.pos[self.labels[5]].mean(),
-            self.pos[self.labels[6]].mean(),
-            self.pos[self.labels[7]].mean()
         ]
 
         self.user_data_list = []
@@ -119,9 +82,9 @@ class ProcessAndTrainData(QWidget):
         self.training_model = DecisionTreeClassifier()
 
         # Calling the method that initializes the User Interface layouts
-        self.initUI()
+        self.initialize_user_interface()
 
-    def initUI(self):
+    def initialize_user_interface(self):
 
         # Define the window title
         self.setWindowTitle('Predict Diabetes')
@@ -130,7 +93,7 @@ class ProcessAndTrainData(QWidget):
         self.setGeometry(self.left, self.top, self.width, self.height)
 
         # Calling the method that creates the
-        self.create_widgets()
+        self.modify_widgets()
 
         # Vertical layout for the window widgets
         predict_window_layout = QVBoxLayout()
@@ -197,7 +160,7 @@ class ProcessAndTrainData(QWidget):
         # Setting the layout
         self.setLayout(predict_window_layout)
 
-    def create_widgets(self):
+    def modify_widgets(self):
 
         self.outcome_label.setFont(QFont('Default', 14))
         self.outcome_label.setFrameStyle(QFrame.StyledPanel)
@@ -217,6 +180,7 @@ class ProcessAndTrainData(QWidget):
             'Entire Dataset Average (Default)',
             'Negative Dataset Average (Women who don\'t have diabetes)',
             'Positive Dataset Average (Women who do have diabetes)',
+            'Failing Values',
             'Passing Values'
         ])
         self.dataset_selection_dropdown.currentIndexChanged.connect(
@@ -244,7 +208,7 @@ class ProcessAndTrainData(QWidget):
         self.insulin_spinbox.setMaximum(self.data_frame[self.labels[4]].max())
         self.insulin_spinbox.setValue(int(self.data_frame[self.labels[4]].mean()))
 
-        self.bmi_spinbox.setDecimals(1)
+        self.bmi_spinbox.setDecimals(2)
         self.bmi_spinbox.setStepType(QAbstractSpinBox.AdaptiveDecimalStepType)
         self.bmi_spinbox.setMinimum(float(self.data_frame[self.labels[5]].min()))
         self.bmi_spinbox.setMaximum(float(self.data_frame[self.labels[5]].max()))
@@ -306,8 +270,19 @@ class ProcessAndTrainData(QWidget):
             self.diabetes_pedigree_function_spinbox.setValue(float(self.pos[self.labels[6]].mean()))
             self.age_spinbox.setValue(int(self.pos[self.labels[7]].mean()))
 
-        # Set spin boxes to values that will not have diabetes if the user selects if from the dropdown
+        # Set spin boxes to the average values of the entire dataset if the user selects if from the dropdown
         if self.dataset_selection_dropdown.currentIndex() == 3:
+            self.pregnancy_spinbox.setValue(int(self.pos[self.labels[0]].mean()) + 5)
+            self.glucose_spinbox.setValue(int(self.pos[self.labels[1]].mean()) + 20)
+            self.blood_pressure_spinbox.setValue(int(self.pos[self.labels[2]].mean()) + 20)
+            self.skin_thickness_spinbox.setValue(int(self.pos[self.labels[3]].mean()) + 10)
+            self.insulin_spinbox.setValue(int(self.pos[self.labels[4]].mean()) + 20)
+            self.bmi_spinbox.setValue(float(self.pos[self.labels[5]].mean()) + 10.0)
+            self.diabetes_pedigree_function_spinbox.setValue(float(self.pos[self.labels[6]].mean()) + 0.5)
+            self.age_spinbox.setValue(int(self.pos[self.labels[7]].mean()) + 10)
+
+        # Set spin boxes to values that will not have diabetes if the user selects if from the dropdown
+        if self.dataset_selection_dropdown.currentIndex() == 4:
             self.pregnancy_spinbox.setValue(2)
             self.glucose_spinbox.setValue(100)
             self.blood_pressure_spinbox.setValue(65)
@@ -324,11 +299,11 @@ class ProcessAndTrainData(QWidget):
 
     def train_model_and_check_accuracy_using_training_data(self):
 
-        X_train, X_test, y_train, y_test = self.split_training_data()
+        x_train, x_test, y_train, y_test = self.split_training_data()
 
-        self.training_model.fit(X_train, y_train)  # Train the model with training dataset
+        self.training_model.fit(x_train, y_train)  # Train the model with training dataset
 
-        prediction = self.training_model.predict(X_test.values)  # Get a prediction with test dataset
+        prediction = self.training_model.predict(x_test)  # Get a prediction with test dataset
 
         # Calculating the Accuracy Score
         ac_score = accuracy_score(y_test, prediction)
@@ -353,7 +328,7 @@ class ProcessAndTrainData(QWidget):
             print()
             print('?!' * 60)
             print(f'"{self.persisting_model}" was not found in {os.getcwd()}')
-            # print('This shouldn\'t have happened, it may be fixed by doing the following:')
+            # print("This shouldn't have happened, it may be fixed by doing the following:")
             # print('     - Run the app again and click the "Train Model" button before the "Make Prediction" button.')
             print('?!' * 60)
             quit()
@@ -364,10 +339,13 @@ class ProcessAndTrainData(QWidget):
         else:
             return load_model
 
-
     def make_prediction_using_user_entered_data(self, user_values):
 
         trained_model = self.load_persisting_model()
+
+        # trained_model = DecisionTreeClassifier()
+
+        # trained_model.fit(self.X, self.y)
 
         prediction = trained_model.predict(user_values)  # Ask for a prediction using the user data set
 

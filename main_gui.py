@@ -13,30 +13,42 @@ class MainWindow(QWidget):
 
         self.diabetes_dataset = 'diabetes.csv'
 
+        self.left = 0
+        self.top = 0
+        self.width = 400
+        self.height = 150
+
+        self.show_graphs_button = QPushButton('Show Graphs')
+        self.predict_button = QPushButton('Predict')
+        self.close_button = QPushButton('Close')
+
+        self.initialize_user_interface()
+
+    def initialize_user_interface(self):
+
         # Define the window title
         self.setWindowTitle('Do you have diabetes?')
 
         # Define the window geometry
-        self.setGeometry(0, 0, 400, 150)
+        self.setGeometry(self.left, self.top, self.width, self.height)
+
+        # Calling the method that creates the
+        self.modify_widgets()
 
         main_window_layout = QGridLayout()
 
-        # Show scatter plots button
-        show_graphs_button = QPushButton('Show Graphs')
-        show_graphs_button.clicked.connect(self.show_graphs)
-        main_window_layout.addWidget(show_graphs_button, 0, 0)
-
-        # Predict data button
-        predict_button = QPushButton('Predict')
-        predict_button.clicked.connect(self.make_prediction)
-        main_window_layout.addWidget(predict_button, 0, 1)
-
-        # Close button
-        close_button = QPushButton('Close')
-        close_button.clicked.connect(self.close_window)
-        main_window_layout.addWidget(close_button, 1, 0, 1, 2)
+        # Add widgets to layout
+        main_window_layout.addWidget(self.show_graphs_button, 0, 0)
+        main_window_layout.addWidget(self.predict_button, 0, 1)
+        main_window_layout.addWidget(self.close_button, 1, 0, 1, 2)
 
         self.setLayout(main_window_layout)
+
+    def modify_widgets(self):
+
+        self.show_graphs_button.clicked.connect(self.show_graphs)
+        self.predict_button.clicked.connect(self.make_prediction)
+        self.close_button.clicked.connect(self.close_window)
 
     @staticmethod
     def load_data(csv_data):

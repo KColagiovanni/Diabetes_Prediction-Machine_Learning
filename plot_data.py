@@ -10,8 +10,18 @@ class PlotData(QWidget):
     def __init__(self, data_frame):
         super().__init__()
 
+        # Define the data frame
         self.data_frame = data_frame
 
+        # Define dimension variables
+        self.left = 100
+        self.top = 100
+        self.width = 1000
+        self.height = 650
+        canvas_width = 900
+        canvas_height = 500
+
+        # Data frame columns
         self.labels = [
             'Pregnancies',
             'Glucose',
@@ -23,16 +33,38 @@ class PlotData(QWidget):
             'Age'
         ]
 
+        # Define the figure
+        self.figure = plt.figure(figsize=(canvas_width, canvas_height), layout='constrained')
+
+        # Define the canvas widget that displays the 'figure'
+        self.canvas = FigureCanvas(self.figure)
+
+        # Define the window buttons
+        self.bar_graph_button = QPushButton('Show Bar Graph')
+        self.scatter_plot_button = QPushButton('Show Scatter Plot')
+        self.close_plot_window_button = QPushButton('Close Window')
+
+        # Defining a label for the dropdown(ComboBox)
+        self.scatter_plot_label = QLabel('Scatter Plot Selection')
+
+        # Define progress bar
+        self.progress_bar = QProgressBar(self)
+
+        # Dropdown menu to select which scatter plot tp display
+        self.scatter_plot_dropdown = QComboBox(self)
+
+        self.initialize_user_interface()
+
+    def initialize_user_interface(self):
+
         # Define the window title
         self.setWindowTitle('Plot')
 
-        # Define the window geometry
-        self.setGeometry(100, 100, 1000, 650)
+        # Define the prediction window geometry
+        self.setGeometry(self.left, self.top, self.width, self.height)
 
-        self.figure = plt.figure(figsize=(900, 500), layout='constrained')
-
-        # Canvas Widget that displays the 'figure'
-        self.canvas = FigureCanvas(self.figure)
+        # Call the method to
+        self.modify_widgets()
 
         # Vertical layout (Widgets are stacked vertically)
         plot_window_layout = QVBoxLayout()
@@ -43,36 +75,6 @@ class PlotData(QWidget):
         # Define group box
         scatter_plot_groupbox = QGroupBox()
         scatter_plot_groupbox.setFixedWidth(630)
-        # scatter_plot_groupbox.setAlignment(Qt.AlignHCenter)  # Center groupbox text
-
-        # Define the window buttons
-        self.bar_graph_button = QPushButton('Show Bar Graph')
-        self.scatter_plot_button = QPushButton('Show Scatter Plot')
-        self.close_plot_window_button = QPushButton('Close Window')
-
-        # Adding action to the buttons
-        self.bar_graph_button.clicked.connect(self.bar_graph)
-        self.scatter_plot_button.clicked.connect(self.scatter_plot)
-        self.close_plot_window_button.clicked.connect(self.close)
-
-        # Dropdown menu to select which scatter plot tp display
-        self.scatter_plot_dropdown = QComboBox(self)
-
-        # Adding items to the dropdown(ComboBox)
-        self.scatter_plot_dropdown.addItems(self.labels)
-
-        # Defining a label for the dropdown(ComboBox)
-        self.scatter_plot_label = QLabel('Scatter Plot Selection')
-        self.scatter_plot_label.setAlignment(Qt.AlignHCenter)
-
-        # Define progress bar
-        self.progress_bar = QProgressBar(self)
-
-        # Setting button width
-        self.scatter_plot_dropdown.setFixedWidth(210)
-        self.bar_graph_button.setFixedHeight(45)
-        self.scatter_plot_button.setFixedHeight(45)
-        self.close_plot_window_button.setFixedHeight(45)
 
         # Adding widgets to the plot selection horizontal layout
         plot_selection_layout.addWidget(self.bar_graph_button)
@@ -94,6 +96,25 @@ class PlotData(QWidget):
 
         # Setting the layout
         self.setLayout(plot_window_layout)
+
+    def modify_widgets(self):
+
+        # Adding action to the buttons
+        self.bar_graph_button.clicked.connect(self.bar_graph)
+        self.scatter_plot_button.clicked.connect(self.scatter_plot)
+        self.close_plot_window_button.clicked.connect(self.close)
+
+        # Adding items to the dropdown(ComboBox)
+        self.scatter_plot_dropdown.addItems(self.labels)
+
+        # Center the label text
+        self.scatter_plot_label.setAlignment(Qt.AlignHCenter)
+
+        # Setting button width
+        self.scatter_plot_dropdown.setFixedWidth(210)
+        self.bar_graph_button.setFixedHeight(45)
+        self.scatter_plot_button.setFixedHeight(45)
+        self.close_plot_window_button.setFixedHeight(45)
 
     def bar_graph(self):
 
