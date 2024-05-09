@@ -180,8 +180,8 @@ class ProcessAndTrainData(QWidget):
             'Entire Dataset Average (Default)',
             'Negative Dataset Average (Women who don\'t have diabetes)',
             'Positive Dataset Average (Women who do have diabetes)',
-            'Failing Values',
-            'Passing Values'
+            'Values that should indicate diabetes',
+            'Values that should indicate no diabetes'
         ])
         self.dataset_selection_dropdown.currentIndexChanged.connect(
             self.get_current_dataset_selection_dropdown_selection
@@ -295,7 +295,7 @@ class ProcessAndTrainData(QWidget):
     def split_training_data(self):
         # Split the data set into two random sets, one for training, one for testing. Returns X_train, X_test, y_train,
         # y_test (in that order)
-        return train_test_split(self.X, self.y, test_size=self.training_sample_size)
+        return train_test_split(self.X.values, self.y.values, test_size=self.training_sample_size)
 
     def train_model_and_check_accuracy_using_training_data(self):
 
@@ -349,7 +349,7 @@ class ProcessAndTrainData(QWidget):
 
         prediction = trained_model.predict(user_values)  # Ask for a prediction using the user data set
 
-        outcome = ['You Do Not Have Diabetes', 'You Have Diabetes']
+        outcome = ['It is Predicted that You Do Not Have Diabetes', 'It is Predicted that You Have Diabetes']
 
         # Print the prediction(s)
         print(f'Prediction: {outcome[prediction[0]]}')
