@@ -124,6 +124,11 @@ class PlotData(QWidget):
         # Clearing figure so current one can be displayed
         self.figure.clear()
 
+        # # ========= Testing ==========
+        # self.data_frame.hist()
+        # plt.show()
+        # # ============================
+
         # Plot a bar graph that displays all the data.
         for data_point in range(len(self.labels)):
 
