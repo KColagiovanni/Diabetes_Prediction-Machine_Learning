@@ -21,7 +21,13 @@ class PlotData(QWidget):
         self.height = 650
         canvas_width = 900
         canvas_height = 500
-        self.graph_button_height = 51
+        self.graph_button_height = 40
+
+        self.bg_color = 'lightgray'
+        self.max_bar_color = 'red'
+        self.pos_bar_color = 'orange'
+        self.neg_bar_color = 'lightgreen'
+        self.min_bar_color = 'lightblue'
 
         # Data frame columns
         self.labels = [
@@ -49,6 +55,7 @@ class PlotData(QWidget):
 
         # Defining a label for the dropdown(ComboBox)
         self.select_a_plot_label = QLabel('Select Data to Plot:')
+        self.horizontal_line = QLabel()
 
         # Define progress bar
         self.progress_bar = QProgressBar(self)
@@ -77,7 +84,7 @@ class PlotData(QWidget):
 
         # Define group box
         plot_groupbox = QGroupBox()
-        plot_groupbox.setFixedWidth(self.width - 20)
+        plot_groupbox.setStyleSheet(f'background-color: {self.bg_color}')
 
         # Adding widgets to the plot selection horizontal layout
         # plot_selection_layout.addWidget(self.bar_graph_button)
@@ -87,17 +94,19 @@ class PlotData(QWidget):
         scatter_plot_groupbox_layout = QGridLayout()
         plot_groupbox.setLayout(scatter_plot_groupbox_layout)
 
-        scatter_plot_groupbox_layout.addWidget(self.bar_graph_button, 1, 0, 1, 2)
-        scatter_plot_groupbox_layout.addWidget(self.scatter_plot_button, 1, 2, 1, 2)
         scatter_plot_groupbox_layout.addWidget(self.select_a_plot_label, 0, 0)
-        scatter_plot_groupbox_layout.addWidget(self.select_plot_dropdown, 0, 1)
-        scatter_plot_groupbox_layout.addWidget(self.new_plot_button, 1, 4, 1, 2)
+        scatter_plot_groupbox_layout.addWidget(self.select_plot_dropdown, 1, 0)
+        scatter_plot_groupbox_layout.addWidget(self.horizontal_line, 2, 0, 1, 3)
+        scatter_plot_groupbox_layout.addWidget(self.bar_graph_button, 3, 0)
+        scatter_plot_groupbox_layout.addWidget(self.scatter_plot_button, 3, 1)
+        scatter_plot_groupbox_layout.addWidget(self.new_plot_button, 3, 2)
+        scatter_plot_groupbox_layout.addWidget(self.close_plot_window_button, 4, 0, 1, 3)
 
         # Adding widgets to the plot window vertical layout
         plot_window_layout.addWidget(self.canvas)
         plot_window_layout.addWidget(self.progress_bar)
-        plot_window_layout.addLayout(plot_selection_layout)  # Adding the horizontal layout to the vertical layout
-        plot_window_layout.addWidget(self.close_plot_window_button)
+        plot_window_layout.addLayout(plot_selection_layout)
+        # plot_window_layout.addWidget(self.close_plot_window_button)
 
         # Setting the layout
         self.setLayout(plot_window_layout)
@@ -114,7 +123,9 @@ class PlotData(QWidget):
         self.select_plot_dropdown.addItems(self.labels)
 
         # Center the label text
-        self.select_a_plot_label.setAlignment(Qt.AlignHCenter)
+        # self.select_a_plot_label.setAlignment(Qt.AlignHCenter)
+        # self.select_a_plot_label.setAlignment(Qt.AlignLeft)
+        self.horizontal_line.setFrameStyle(QFrame.HLine)
 
         # Setting button width
         # self.select_plot_dropdown.setFixedWidth(210)
@@ -163,9 +174,9 @@ class PlotData(QWidget):
 
         # ========================================== New Code ==========================================================
 
-        def addlabels(x, y):
-            for i in range(len(x)):
-                plt.text(i, y[i], y[i], ha='center')
+        # def addlabels(x, y):
+        #     for i in range(len(x)):
+        #         plt.text(i, y[i], y[i], ha='center')
 
         ptd = ProcessAndTrainData(self.data_frame)
 
@@ -200,26 +211,26 @@ class PlotData(QWidget):
             X_min = int(X_min)
 
         # Plot data
-        ax.bar(1, X_max, color='red', width=1)
+        ax.bar(1, X_max, color=self.max_bar_color, width=1)
         ax.text(1, X_max / 2, str(X_max), ha='center')
 
-        ax.bar(2, pos_avg, color='orange', width=1)
+        ax.bar(2, pos_avg, color=self.pos_bar_color, width=1)
         ax.text(2, pos_avg / 2, str(pos_avg), ha='center')
 
-        ax.bar(3, neg_avg, color='yellow', width=1)
+        ax.bar(3, neg_avg, color=self.neg_bar_color, width=1)
         ax.text(3, neg_avg / 2, str(neg_avg), ha='center')
 
-        ax.bar(4, X_min, color='green', width=1)
+        ax.bar(4, X_min, color=self.min_bar_color, width=1)
         if X_min < 0.1:
             ax.text(4, X_min, str(X_min), ha='center')
         else:
             ax.text(4, X_min / 2, str(X_min), ha='center')
 
-        ax.set_title(self.labels[column_index], loc='left')
+        ax.set_title(self.labels[column_index], loc='center')
         ax.tick_params(bottom=False, labelbottom=False)  # Remove x-axis tick marks and labels
 
         # Display the legend
-        self.figure.legend(['Max Values', 'Diabetes Avg', 'Non-Diabetes Avg', 'Min Values'])
+        self.figure.legend(['Max Values', 'Has Diabetes Avg', 'Doesn\'t Have Diabetes Avg', 'Min Values'])
 
         # Draw the graph on the canvas
         self.canvas.draw()
