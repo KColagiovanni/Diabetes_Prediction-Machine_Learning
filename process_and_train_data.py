@@ -6,6 +6,7 @@ from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 import os
+import glob
 
 
 class ProcessAndTrainData(QWidget):
@@ -30,8 +31,10 @@ class ProcessAndTrainData(QWidget):
         self.y = self.data_frame['Outcome']  # Output data
 
         self.training_sample_size = 0.2
+        self.ac_score = 0
 
-        self.persisting_model = 'diabetes_predictions.joblib'
+        self.persisting_model_name = 'diabetes_predictions'
+        self.persisting_model_filetype = 'joblib'
 
         self.labels = [
             'Pregnancies',
@@ -192,20 +195,20 @@ class ProcessAndTrainData(QWidget):
         self.pregnancy_spinbox.setMaximum(self.data_frame[self.labels[0]].max())
         self.pregnancy_spinbox.setValue(int(self.data_frame[self.labels[0]].mean()))
 
-        self.glucose_spinbox.setMinimum(self.data_frame[self.labels[1]].min())
-        self.glucose_spinbox.setMaximum(self.data_frame[self.labels[1]].max())
+        self.glucose_spinbox.setMinimum(int(self.data_frame[self.labels[1]].min()))
+        self.glucose_spinbox.setMaximum(int(self.data_frame[self.labels[1]].max()))
         self.glucose_spinbox.setValue(int(self.data_frame[self.labels[1]].mean()))
 
-        self.blood_pressure_spinbox.setMinimum(self.data_frame[self.labels[2]].min())
-        self.blood_pressure_spinbox.setMaximum(self.data_frame[self.labels[2]].max())
+        self.blood_pressure_spinbox.setMinimum(int(self.data_frame[self.labels[2]].min()))
+        self.blood_pressure_spinbox.setMaximum(int(self.data_frame[self.labels[2]].max()))
         self.blood_pressure_spinbox.setValue(int(self.data_frame[self.labels[2]].mean()))
 
-        self.skin_thickness_spinbox.setMinimum(self.data_frame[self.labels[3]].min())
-        self.skin_thickness_spinbox.setMaximum(self.data_frame[self.labels[3]].max())
+        self.skin_thickness_spinbox.setMinimum(int(self.data_frame[self.labels[3]].min()))
+        self.skin_thickness_spinbox.setMaximum(int(self.data_frame[self.labels[3]].max()))
         self.skin_thickness_spinbox.setValue(int(self.data_frame[self.labels[3]].mean()))
 
-        self.insulin_spinbox.setMinimum(self.data_frame[self.labels[4]].min())
-        self.insulin_spinbox.setMaximum(self.data_frame[self.labels[4]].max())
+        self.insulin_spinbox.setMinimum(int(self.data_frame[self.labels[4]].min()))
+        self.insulin_spinbox.setMaximum(int(self.data_frame[self.labels[4]].max()))
         self.insulin_spinbox.setValue(int(self.data_frame[self.labels[4]].mean()))
 
         self.bmi_spinbox.setDecimals(2)
@@ -231,7 +234,14 @@ class ProcessAndTrainData(QWidget):
         # Adding action to the buttons
         self.close_predict_window_button.clicked.connect(self.close)
 
-        self.train_model_and_check_accuracy_using_training_data()
+        # Check if a persisting model exists in the cwd. If not, train and save one, else, get the accuracy score of the
+        # existing model.
+        if len(glob.glob(f'{self.persisting_model_name}*{self.persisting_model_filetype}')) == 0:
+            self.train_model_and_check_accuracy_using_training_data()
+        else:
+            persisting_filename = glob.glob(f'{self.persisting_model_name}*{self.persisting_model_filetype}')[0]
+            ac_score = persisting_filename.split('_')[2][:-7]
+            self.training_model_accuracy_label.setText(f'Training Model Accuracy: {ac_score}%')
 
     def get_current_dataset_selection_dropdown_selection(self):
 
@@ -306,35 +316,43 @@ class ProcessAndTrainData(QWidget):
         prediction = self.training_model.predict(x_test)  # Get a prediction with test dataset
 
         # Calculating the Accuracy Score
-        ac_score = accuracy_score(y_test, prediction)
+        self.ac_score = round(accuracy_score(y_test, prediction) * 100, 2)
 
         # Print the Accuracy Score
-        print(f'Accuracy Score: {round(ac_score * 100, 2)}%')
+        print(f'Accuracy Score: {self.ac_score}%')
 
-        self.training_model_accuracy_label.setText(f'Training Model Accuracy: {round(ac_score * 100, 2)}%')
+        self.training_model_accuracy_label.setText(f'Training Model Accuracy: {self.ac_score}%')
 
         self.save_persisting_model()
 
     def save_persisting_model(self):
-        joblib.dump(self.training_model, self.persisting_model)
-        print(f'"{self.persisting_model}" was saved to {os.getcwd()}.')
+
+        # Delete any existing joblib files
+        joblib_files = glob.glob(f'{self.persisting_model_name}*{self.persisting_model_filetype}')
+        for file in joblib_files:
+            print(f'Deleting {file}...')
+            os.remove(file)
+
+        joblib.dump(
+            self.training_model,
+            f'{self.persisting_model_name}_{self.ac_score}.{self.persisting_model_filetype}'
+        )
+        print(f'"{self.persisting_model_name}_{self.ac_score}.{self.persisting_model_filetype}"'
+              f' was saved to {os.getcwd()}.')
 
     def load_persisting_model(self):
 
+        persisting_filename = glob.glob(f'{self.persisting_model_name}*{self.persisting_model_filetype}')[0]
+
         try:
-            load_model = joblib.load(self.persisting_model)
+            load_model = joblib.load(persisting_filename)
 
         except FileNotFoundError:
             print()
             print('?!' * 60)
-            print(f'"{self.persisting_model}" was not found in {os.getcwd()}')
-            # print("This shouldn't have happened, it may be fixed by doing the following:")
-            # print('     - Run the app again and click the "Train Model" button before the "Make Prediction" button.')
+            print(f'"{self.persisting_model_name}" was not found in {os.getcwd()}')
             print('?!' * 60)
             quit()
-
-            # --------------------- Possible extra -----------------------
-            # Add a warning message that calls the save_persisting_model() method if the user clicks yes
 
         else:
             return load_model

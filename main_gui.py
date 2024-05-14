@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import *
 from plot_data import PlotData
 from process_and_train_data import ProcessAndTrainData
 import pandas as pd
+import numpy as np
 
 
 class MainWindow(QWidget):
@@ -13,11 +14,13 @@ class MainWindow(QWidget):
         super().__init__()
 
         self.diabetes_dataset = 'diabetes.csv'
+        # self.cleaned_diabetes_dataset =
+
 
         self.left = 0
         self.top = 0
         self.width = 500
-        self.height = 250
+        self.height = 300
         self.button_height = 40
         self.button_width = 400
 
@@ -27,6 +30,8 @@ class MainWindow(QWidget):
         self.pldata = ''
 
         self.check_for_csv_file_button = QPushButton('Check for CSV File Again')
+        self.dataset_selection_label = QLabel('Select a dataset to use: ')
+        self.dataset_selection_combobox = QComboBox(self)
         self.show_graphs_button = QPushButton('Show Graphs')
         self.predict_button = QPushButton('Predict')
         self.close_button = QPushButton('Close')
@@ -46,8 +51,14 @@ class MainWindow(QWidget):
 
         main_window_layout = QVBoxLayout()
 
+        dataset_selection_layout = QHBoxLayout()
+
+        dataset_selection_layout.addWidget(self.dataset_selection_label)
+        dataset_selection_layout.addWidget(self.dataset_selection_combobox)
+
         # Add widgets to layout
         main_window_layout.addWidget(self.csv_loaded_label)
+        main_window_layout.addLayout(dataset_selection_layout)
         main_window_layout.addWidget(self.check_for_csv_file_button)
         main_window_layout.addWidget(self.show_graphs_button)
         main_window_layout.addWidget(self.predict_button)
@@ -58,6 +69,8 @@ class MainWindow(QWidget):
     def modify_widgets(self):
 
         self.csv_loaded_label.setAlignment(Qt.AlignCenter)
+
+        self.dataset_selection_combobox.addItems(['Original Dataset', 'Cleaned Dataset'])
 
         self.check_for_csv_file_button.setFixedHeight(self.button_height)
         # self.check_for_csv_file_button.setFixedWidth(self.button_width)
@@ -96,14 +109,31 @@ class MainWindow(QWidget):
 
         self.csv_loaded_label.setText(f'The diabetes dataset CSV file has{result} been found!{extra_details}')
 
-    @staticmethod
-    def load_data(csv_data):
-        return pd.read_csv(csv_data)
+    def load_data(self, csv_data):
+
+        selected_dataframe = pd.read_csv(csv_data)
+
+        if self.dataset_selection_combobox.currentIndex() == 0:
+            return selected_dataframe
+
+        if self.dataset_selection_combobox.currentIndex() == 1:
+            selected_dataframe_copy = selected_dataframe.copy(deep=True)
+            selected_dataframe_copy[['Glucose', 'BloodPressure', 'SkinThickness', 'Insulin', 'BMI']] = (
+                selected_dataframe_copy[['Glucose', 'BloodPressure', 'SkinThickness', 'Insulin', 'BMI']].replace(
+                    0, np.NaN
+                ))
+            selected_dataframe_copy['Glucose'].fillna(selected_dataframe_copy['Glucose'].mean(), inplace=True)
+            selected_dataframe_copy['BloodPressure'].fillna(selected_dataframe_copy['BloodPressure'].mean(), inplace=True)
+            selected_dataframe_copy['SkinThickness'].fillna(selected_dataframe_copy['SkinThickness'].mean(), inplace=True)
+            selected_dataframe_copy['Insulin'].fillna(selected_dataframe_copy['Insulin'].mean(), inplace=True)
+            selected_dataframe_copy['BMI'].fillna(selected_dataframe_copy['BMI'].mean(), inplace=True)
+            return selected_dataframe_copy
 
     def make_prediction(self):
         # print(self.load_data(self.diabetes_dataset))
         try:
             self.ptd = ProcessAndTrainData(self.load_data(self.diabetes_dataset))
+            print(self.ptd)
         except FileNotFoundError:
             self.check_for_csv_file()
         else:

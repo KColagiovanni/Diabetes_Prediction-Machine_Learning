@@ -53,7 +53,11 @@ class PlotData(QWidget):
         self.new_plot_button = QPushButton('Show Histogram Graph')
         self.close_plot_window_button = QPushButton('Close Window')
 
+        # Define a checkbox and label to show or hide zero values in plots
+        self.hide_zero_values = QCheckBox('Hide data with a value of "0"')
+
         # Defining a label for the dropdown(ComboBox)
+
         self.select_a_plot_label = QLabel('Select Data to Plot:')
         self.horizontal_line = QLabel()
 
@@ -96,6 +100,7 @@ class PlotData(QWidget):
 
         scatter_plot_groupbox_layout.addWidget(self.select_a_plot_label, 0, 0)
         scatter_plot_groupbox_layout.addWidget(self.select_plot_dropdown, 1, 0)
+        scatter_plot_groupbox_layout.addWidget(self.hide_zero_values, 1, 2)
         scatter_plot_groupbox_layout.addWidget(self.horizontal_line, 2, 0, 1, 3)
         scatter_plot_groupbox_layout.addWidget(self.bar_graph_button, 3, 0)
         scatter_plot_groupbox_layout.addWidget(self.scatter_plot_button, 3, 1)
@@ -121,6 +126,8 @@ class PlotData(QWidget):
 
         # Adding items to the dropdown(ComboBox)
         self.select_plot_dropdown.addItems(self.labels)
+
+        self.hide_zero_values.setChecked(True)
 
         # Center the label text
         # self.select_a_plot_label.setAlignment(Qt.AlignHCenter)
@@ -271,28 +278,56 @@ class PlotData(QWidget):
             else:  # Has diabetes.
                 color = 'red'
 
+            # # Hide the zero values in all columns, EXCEPT pregnancies if user selected checkbox.
+            # if self.show_data_with_zero_values.isChecked():
+            #
             # Remove the data points with a 0 value in all columns, EXCEPT pregnancies.
-            if self.data_frame.to_numpy()[data_point][column_index] > 0 and self.labels[column_index] != 'Pregnancies':
+            # if self.data_frame.to_numpy()[data_point][column_index] > 0 and self.labels[column_index] != 'Pregnancies':
+            if self.labels[column_index] != 'Pregnancies':
 
-                # Determining the min value for the data frame
-                if self.data_frame.to_numpy()[data_point][column_index] < min_data_frame_value:
-                    min_data_frame_value = self.data_frame.to_numpy()[data_point][column_index]
+                if self.hide_zero_values.isChecked():
+                    if self.data_frame.to_numpy()[data_point][column_index] > 0:
+
+                        # Determining the min value for the data frame
+                        if self.data_frame.to_numpy()[data_point][column_index] < min_data_frame_value:
+                            min_data_frame_value = self.data_frame.to_numpy()[data_point][column_index]
+                        else:
+                            self.data_frame.to_numpy()[data_point][column_index] = min_data_frame_value
+
+                        # Calculating the steps to the x-axis ticks
+                        if self.labels[column_index] == 'BMI':
+                            steps = round(
+                                (self.data_frame[self.labels[column_index]].max() - min_data_frame_value) / 10, 1)
+                        elif self.labels[column_index] == 'DiabetesPedigreeFunction':
+                            steps = round(
+                                (self.data_frame[self.labels[column_index]].max() - min_data_frame_value) / 10, 2)
+                        else:
+                            steps = (self.data_frame[self.labels[column_index]].max() - min_data_frame_value) // 10
+
+                        ax.scatter(self.data_frame.to_numpy()[data_point][column_index], data_point, color=color)
+                        ax.xaxis.set_ticks(np.arange(min_data_frame_value, self.data_frame[self.labels[column_index]].max(), steps))
+
+                        zero_count += 1
                 else:
-                    self.data_frame.to_numpy()[data_point][column_index] = min_data_frame_value
+                    # Determining the min value for the data frame
+                    if self.data_frame.to_numpy()[data_point][column_index] < min_data_frame_value:
+                        min_data_frame_value = self.data_frame.to_numpy()[data_point][column_index]
+                    else:
+                        self.data_frame.to_numpy()[data_point][column_index] = min_data_frame_value
 
-                # Calculating the steps to the x-axis ticks
-                if self.labels[column_index] == 'BMI':
-                    steps = round((self.data_frame[self.labels[column_index]].max() - min_data_frame_value) / 10, 1)
-                elif self.labels[column_index] == 'DiabetesPedigreeFunction':
-                    steps = round((self.data_frame[self.labels[column_index]].max() - min_data_frame_value) / 10, 2)
-                else:
-                    steps = (self.data_frame[self.labels[column_index]].max() - min_data_frame_value) // 10
+                    # Calculating the steps to the x-axis ticks
+                    if self.labels[column_index] == 'BMI':
+                        steps = round((self.data_frame[self.labels[column_index]].max() - min_data_frame_value) / 10, 1)
+                    elif self.labels[column_index] == 'DiabetesPedigreeFunction':
+                        steps = round((self.data_frame[self.labels[column_index]].max() - min_data_frame_value) / 10, 2)
+                    else:
+                        steps = (self.data_frame[self.labels[column_index]].max() - min_data_frame_value) // 10
 
-                ax.scatter(self.data_frame.to_numpy()[data_point][column_index], data_point, color=color)
-                ax.xaxis.set_ticks(
-                    np.arange(min_data_frame_value, self.data_frame[self.labels[column_index]].max(), steps)
-                )
-                zero_count += 1
+                    ax.scatter(self.data_frame.to_numpy()[data_point][column_index], data_point, color=color)
+                    ax.xaxis.set_ticks(
+                        np.arange(min_data_frame_value, self.data_frame[self.labels[column_index]].max(), steps)
+                    )
+
                 percent_dropped = round((self.data_frame.shape[0] - zero_count) / self.data_frame.shape[0] * 100, 1)
 
             # Plot all pregnancy data.
@@ -301,6 +336,7 @@ class PlotData(QWidget):
                 ax.xaxis.set_ticks(np.arange(0, 18, 1))
                 zero_count = self.data_frame.shape[0]
                 percent_dropped = 0
+
 
         print(f'Showing the {self.labels[column_index]} plot. ({self.data_frame.shape[0] - zero_count}'
               f' zero points have been dropped({percent_dropped}%))')
@@ -326,25 +362,32 @@ class PlotData(QWidget):
 
         ax.set_title(self.labels[column_index])
 
+        # # Hide the zero values in all columns, EXCEPT pregnancies if user selected checkbox.
+        # if self.show_data_with_zero_values.isChecked():
+        #
         # Drop all zero values in every column, except for the pregnancy column. Also define # of bins and x ticks.
         if self.labels[column_index] == 'Pregnancies':
             bins = 17
             no_zeros_data_frame = self.data_frame[self.labels[column_index]]
             ax.xaxis.set_ticks(np.arange(0, bins, 1))
-        else:
+        elif self.hide_zero_values.isChecked():
             bins = 20
             no_zeros_data_frame = self.data_frame[
                 self.labels[column_index]][self.data_frame[self.labels[column_index]] != 0]
 
-            if self.labels[column_index] == 'BMI':
-                steps = round(((no_zeros_data_frame.max() - no_zeros_data_frame.min()) / 10), 1)
-            elif self.labels[column_index] == 'DiabetesPedigreeFunction':
-                steps = round(((no_zeros_data_frame.max() - no_zeros_data_frame.min()) / 10), 2)
-            else:
-                steps = (no_zeros_data_frame.max() - no_zeros_data_frame.min()) // 10
+        else:
+            bins = 20
+            no_zeros_data_frame = self.data_frame
 
-            ax.xaxis.set_ticks(np.arange(round(no_zeros_data_frame.min(), 2), no_zeros_data_frame.max(), steps))
+        if self.labels[column_index] == 'BMI':
+            steps = round(((no_zeros_data_frame.max() - no_zeros_data_frame.min()) / 10), 1)
+        elif self.labels[column_index] == 'DiabetesPedigreeFunction':
+            steps = round(((no_zeros_data_frame.max() - no_zeros_data_frame.min()) / 10), 2)
+        else:
+            steps = (no_zeros_data_frame.max() - no_zeros_data_frame.min()) // 10
 
+        ax.xaxis.set_ticks(np.arange(round(no_zeros_data_frame.min(), 2), no_zeros_data_frame.max(), steps))
         ax.hist(no_zeros_data_frame.to_numpy(), bins=bins)
+
         self.canvas.draw()
         # self.progress_bar.reset()
