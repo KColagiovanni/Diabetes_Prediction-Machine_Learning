@@ -370,6 +370,7 @@ class PlotData(QWidget):
             bins = 17
             no_zeros_data_frame = self.data_frame[self.labels[column_index]]
             ax.xaxis.set_ticks(np.arange(0, bins, 1))
+
         elif self.hide_zero_values.isChecked():
             bins = 20
             no_zeros_data_frame = self.data_frame[
@@ -377,7 +378,7 @@ class PlotData(QWidget):
 
         else:
             bins = 20
-            no_zeros_data_frame = self.data_frame
+            no_zeros_data_frame = self.data_frame[self.labels[column_index]]
 
         if self.labels[column_index] == 'BMI':
             steps = round(((no_zeros_data_frame.max() - no_zeros_data_frame.min()) / 10), 1)
