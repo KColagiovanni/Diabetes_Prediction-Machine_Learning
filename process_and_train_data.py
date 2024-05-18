@@ -7,6 +7,8 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 import os
 import glob
+import time
+
 
 
 class ProcessAndTrainData(QWidget):
@@ -232,7 +234,7 @@ class ProcessAndTrainData(QWidget):
         self.retrain_model_button.clicked.connect(self.train_model_and_check_accuracy_using_training_data)
 
         # Adding action to the buttons
-        self.close_predict_window_button.clicked.connect(self.close)
+        self.close_predict_window_button.clicked.connect(self.close_predict_window)
 
         # Check if a persisting model exists in the cwd. If not, train and save one, else, get the accuracy score of the
         # existing model.
@@ -361,16 +363,15 @@ class ProcessAndTrainData(QWidget):
 
         trained_model = self.load_persisting_model()
 
-        # trained_model = DecisionTreeClassifier()
-
-        # trained_model.fit(self.X, self.y)
-
         prediction = trained_model.predict(user_values)  # Ask for a prediction using the user data set
 
         outcome = ['It is Predicted that You Do Not Have Diabetes', 'It is Predicted that You Have Diabetes']
 
         # Print the prediction(s)
+        print()
+        print('=' * 70)
         print(f'Prediction: {outcome[prediction[0]]}')
+        print('=' * 70)
 
         if prediction[0] == 0:
             self.result_font_color = 'green'
@@ -388,6 +389,8 @@ class ProcessAndTrainData(QWidget):
 
     def prediction_outcome(self):
 
+        start = time.perf_counter()
+
         self.user_data_list = [
             self.pregnancy_spinbox.value(),
             self.glucose_spinbox.value(),
@@ -400,3 +403,15 @@ class ProcessAndTrainData(QWidget):
         ]
 
         self.make_prediction_using_user_entered_data([self.user_data_list])
+
+        end = time.perf_counter()
+
+        print(f'The prediction was done in {(end - start) * 10 ** 3:0.4f} ms')
+
+
+    def close_predict_window(self):
+
+        print('Closing the Prediction Window')
+
+        # Close the prediction window
+        self.close()

@@ -14,8 +14,6 @@ class MainWindow(QWidget):
         super().__init__()
 
         self.diabetes_dataset = 'diabetes.csv'
-        # self.cleaned_diabetes_dataset =
-
 
         self.left = 0
         self.top = 0
@@ -107,6 +105,7 @@ class MainWindow(QWidget):
             self.predict_button.setDisabled(False)
             self.show_graphs_button.setDisabled(False)
 
+        print(f'The diabetes dataset CSV file has{result} been found!{extra_details}')
         self.csv_loaded_label.setText(f'The diabetes dataset CSV file has{result} been found!{extra_details}')
 
     def load_data(self, csv_data):
@@ -114,6 +113,7 @@ class MainWindow(QWidget):
         selected_dataframe = pd.read_csv(csv_data)
 
         if self.dataset_selection_combobox.currentIndex() == 0:
+            print('\nOriginal data set has been loaded')
             return selected_dataframe
 
         if self.dataset_selection_combobox.currentIndex() == 1:
@@ -127,23 +127,18 @@ class MainWindow(QWidget):
             selected_dataframe_copy['SkinThickness'].fillna(selected_dataframe_copy['SkinThickness'].mean(), inplace=True)
             selected_dataframe_copy['Insulin'].fillna(selected_dataframe_copy['Insulin'].mean(), inplace=True)
             selected_dataframe_copy['BMI'].fillna(selected_dataframe_copy['BMI'].mean(), inplace=True)
+            print('Cleaned data set has been loaded')
             return selected_dataframe_copy
 
     def make_prediction(self):
         # print(self.load_data(self.diabetes_dataset))
         try:
             self.ptd = ProcessAndTrainData(self.load_data(self.diabetes_dataset))
-            print(self.ptd)
         except FileNotFoundError:
             self.check_for_csv_file()
         else:
+            print('Opening the Prediction Window')
             self.ptd.show()
-        # ptd = ProcessAndTrainData()
-        # data_frame = ptd.load_data('diabetes.csv')
-        # X, y, neg, pos = ptd.prepare_data(data_frame)
-        # X_train, X_test, y_train, y_test = ptd.train_data(X, y)
-        # accuracy_score = ptd.predict_data(X_train, X_test, y_train, y_test)
-        # self.accuracy_label.setText(f'Accuracy: {round(accuracy_score * 100, 2)}%')
 
     # @staticmethod
     def show_graphs(self):
@@ -152,14 +147,15 @@ class MainWindow(QWidget):
         except FileNotFoundError:
             self.check_for_csv_file()
         else:
+            print('Opening the Graph Window')
             self.pldata.show()
 
     def close_window(self):
 
-        print('Exiting Application')
+        print('Exiting Main Application')
 
-        # Close the window
-        self.close()
+        # Close the main window and any other child windows
+        QApplication.closeAllWindows()
 
 
 if __name__ == '__main__':
@@ -171,7 +167,7 @@ if __name__ == '__main__':
     main_window = MainWindow()
 
     # Show the window and all the widgets
-    print('Showing the main window.')
+    print('\nShowing the Main Window.')
     main_window.show()
 
     # Start the app loop
