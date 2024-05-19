@@ -1,4 +1,0 @@
-- Save and load a persisting model
-- Refactor the __init__ methods in main_gui and plot_data
-- Clean up any unused code and unwanted print statements
-- Make sure all necessary comments are written

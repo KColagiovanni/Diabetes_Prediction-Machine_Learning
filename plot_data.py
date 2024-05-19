@@ -14,8 +14,8 @@ class PlotData(QWidget):
         self.data_frame = data_frame
 
         # Define dimension variables
-        self.left = 100
-        self.top = 100
+        self.left = 0
+        self.top = 400
         self.width = 1000
         self.height = 650
         canvas_width = 900
@@ -74,7 +74,7 @@ class PlotData(QWidget):
     def initialize_user_interface(self):
 
         # Define the window title
-        self.setWindowTitle('Plot')
+        self.setWindowTitle('Graph Data')
 
         # Define the prediction window geometry
         self.setGeometry(self.left, self.top, self.width, self.height)
@@ -125,6 +125,8 @@ class PlotData(QWidget):
         self.new_plot_button.clicked.connect(self.histogram_plot)
         self.close_plot_window_button.clicked.connect(self.close_plot_window)
 
+        self.select_plot_dropdown.currentIndexChanged.connect(self.get_changed_status_from_dropdown)
+
         # Adding items to the dropdown(ComboBox)
         self.select_plot_dropdown.addItems(self.column_names)
 
@@ -139,6 +141,12 @@ class PlotData(QWidget):
         self.new_plot_button.setFixedHeight(self.graph_button_height)
 
         self.close_plot_window_button.setFixedHeight(self.graph_button_height)
+
+    def get_changed_status_from_dropdown(self):
+        if self.select_plot_dropdown.currentIndex() == 0:
+            self.hide_zero_values.setHidden(True)
+        else:
+            self.hide_zero_values.setHidden(False)
 
     def bar_graph(self):
 

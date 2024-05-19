@@ -10,15 +10,14 @@ import glob
 import time
 
 
-
 class ProcessAndTrainData(QWidget):
 
     def __init__(self, data_frame):
         super().__init__()
 
         self.data_frame = data_frame
-        self.left = 100
-        self.top = 100
+        self.left = 1000
+        self.top = 0
         self.width = 450
         self.height = 300
 
@@ -61,7 +60,7 @@ class ProcessAndTrainData(QWidget):
         self.bmi_spinbox_label = QLabel('Body Mass Index')
         self.diabetes_pedigree_function_spinbox_label = QLabel('Diabetes Pedigree Function')
         self.age_spinbox_label = QLabel('Age')
-        self.dataset_selection_label = QLabel('Dataset: ')
+        self.dataset_selection_label = QLabel('Predefined Values: ')
         self.training_model_accuracy_label = QLabel('Training Model Accuracy:')
         self.horizontal_line1 = QLabel()
         self.horizontal_line2 = QLabel()
