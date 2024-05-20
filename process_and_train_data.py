@@ -188,7 +188,7 @@ class ProcessAndTrainData(QWidget):
             'Values that should indicate no diabetes'
         ])
         self.dataset_selection_dropdown.currentIndexChanged.connect(
-            self.get_current_dataset_selection_dropdown_selection
+            self.set_current_dataset_selection_dropdown_selection
         )
 
         # Defining the spin boxs and their labels
@@ -239,12 +239,14 @@ class ProcessAndTrainData(QWidget):
         # existing model.
         if len(glob.glob(f'{self.persisting_model_name}*{self.persisting_model_filetype}')) == 0:
             self.train_model_and_check_accuracy_using_training_data()
+            print(f'A joblib persisting model file was not found so one will be created and saved in {os.getcwd()}')
         else:
             persisting_filename = glob.glob(f'{self.persisting_model_name}*{self.persisting_model_filetype}')[0]
             ac_score = persisting_filename.split('_')[2][:-7]
             self.training_model_accuracy_label.setText(f'Training Model Accuracy: {ac_score}%')
+            print(f'A joblib persisting model file was found and loaded.')
 
-    def get_current_dataset_selection_dropdown_selection(self):
+    def set_current_dataset_selection_dropdown_selection(self):
 
         # Set spin boxes to the average values of the entire dataset if the user selects if from the dropdown
         if self.dataset_selection_dropdown.currentIndex() == 0:
@@ -303,18 +305,20 @@ class ProcessAndTrainData(QWidget):
             self.diabetes_pedigree_function_spinbox.setValue(0.40)
             self.age_spinbox.setValue(45)
 
-    def split_training_data(self):
-        # Split the data set into two random sets, one for training, one for testing. Returns X_train, X_test, y_train,
-        # y_test (in that order)
-        return train_test_split(self.X.values, self.y.values, test_size=self.training_sample_size)
-
     def train_model_and_check_accuracy_using_training_data(self):
 
-        x_train, x_test, y_train, y_test = self.split_training_data()
+        # Split the data set into two random sets, one for training, one for testing. Returns X_train, X_test, y_train,
+        # y_test (in that order)
+        x_train, x_test, y_train, y_test = train_test_split(
+            self.X.values,
+            self.y.values,
+            test_size=self.training_sample_size)
 
-        self.training_model.fit(x_train, y_train)  # Train the model with training dataset
+        # Train the model with training dataset
+        self.training_model.fit(x_train, y_train)
 
-        prediction = self.training_model.predict(x_test)  # Get a prediction with test dataset
+        # Get a prediction with test dataset
+        prediction = self.training_model.predict(x_test)
 
         # Calculating the Accuracy Score
         self.ac_score = round(accuracy_score(y_test, prediction) * 100, 2)
@@ -322,8 +326,10 @@ class ProcessAndTrainData(QWidget):
         # Print the Accuracy Score
         print(f'Accuracy Score: {self.ac_score}%')
 
+        # Update the label with the calculated accuracy score
         self.training_model_accuracy_label.setText(f'Training Model Accuracy: {self.ac_score}%')
 
+        # Save the training model
         self.save_persisting_model()
 
     def save_persisting_model(self):
