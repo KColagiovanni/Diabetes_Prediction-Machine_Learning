@@ -83,7 +83,13 @@ class ProcessAndTrainData(QWidget):
         self.close_predict_window_button = QPushButton('Close Window')
 
         # Define data models
-        self.training_model = DecisionTreeClassifier()
+        self.training_model = DecisionTreeClassifier(
+            max_depth=3,  # Limit the maximum depth of the tree
+            min_samples_split=4,  # Require at least 4 samples to split a node
+            min_samples_leaf=2,  # Each leaf must have at least 2 samples
+            max_leaf_nodes=10,  # Limit the number of leaf nodes
+            min_impurity_decrease=0.01  # Minimum impurity decrease for a split
+        )
 
         # Calling the method that initializes the User Interface layouts
         self.initialize_user_interface()
