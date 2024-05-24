@@ -15,6 +15,7 @@ class ProcessAndTrainData(QWidget):
     def __init__(self, data_frame):
         super().__init__()
 
+        # Define variables
         self.data_frame = data_frame
         self.left = 1000
         self.top = 0
@@ -117,6 +118,7 @@ class ProcessAndTrainData(QWidget):
         # Define groupbox and add it to the layout
         spinbox_groupbox = QGroupBox()
 
+        # Add widgets to layouts
         dataset_selection_layout.addWidget(self.dataset_selection_label)
         dataset_selection_layout.addWidget(self.dataset_selection_dropdown)
         predict_window_layout.addWidget(self.outcome_label)
@@ -155,13 +157,17 @@ class ProcessAndTrainData(QWidget):
 
         spinbox_layout.addWidget(self.predict_button, 8, 0, 1, 2)
 
+        # Adding a horizontal line to the layout
         predict_window_layout.addWidget(self.horizontal_line2)
 
+        # Adding accuracy buttons to the layout
         training_accuracy_layout.addWidget(self.retrain_model_button)
         training_accuracy_layout.addWidget(self.training_model_accuracy_label)
 
+        # Adding the accuracy layout to the window
         predict_window_layout.addLayout(training_accuracy_layout)
 
+        # Adding a horizontal line to the layout
         predict_window_layout.addWidget(self.horizontal_line3)
 
         # Adding the button to the layout
@@ -172,6 +178,7 @@ class ProcessAndTrainData(QWidget):
 
     def modify_widgets(self):
 
+        # Defining the style of the outcome label
         self.outcome_label.setFont(QFont('Default', 14))
         self.outcome_label.setFrameStyle(QFrame.StyledPanel)
         self.outcome_label.setAlignment(Qt.AlignCenter)
@@ -182,10 +189,12 @@ class ProcessAndTrainData(QWidget):
             f'padding: {self.result_padding}'
         )
 
+        # Defining the type of line (Horizontal)
         self.horizontal_line1.setFrameStyle(QFrame.HLine)
         self.horizontal_line2.setFrameStyle(QFrame.HLine)
         self.horizontal_line3.setFrameStyle(QFrame.HLine)
 
+        # Adding items to the dataset selection dropdown box
         self.dataset_selection_dropdown.addItems([
             'Entire Dataset Average (Default)',
             'Negative Dataset Average (Women who don\'t have diabetes)',
@@ -193,9 +202,6 @@ class ProcessAndTrainData(QWidget):
             'Values that should indicate diabetes',
             'Values that should indicate no diabetes'
         ])
-        self.dataset_selection_dropdown.currentIndexChanged.connect(
-            self.set_current_dataset_selection_dropdown_selection
-        )
 
         # Defining the spin boxs and their labels
         self.pregnancy_spinbox.setMinimum(self.data_frame[self.labels[0]].min())
@@ -234,11 +240,12 @@ class ProcessAndTrainData(QWidget):
         self.age_spinbox.setMaximum(self.data_frame[self.labels[7]].max())
         self.age_spinbox.setValue(int(self.data_frame[self.labels[7]].mean()))
 
+        # Defining the methods to be called
+        self.dataset_selection_dropdown.currentIndexChanged.connect(
+            self.set_current_dataset_selection_dropdown_selection
+        )
         self.predict_button.clicked.connect(self.prediction_outcome)
-
         self.retrain_model_button.clicked.connect(self.train_model_and_check_accuracy_using_training_data)
-
-        # Adding action to the buttons
         self.close_predict_window_button.clicked.connect(self.close_predict_window)
 
         # Check if a persisting model exists in the cwd. If not, train and save one, else, get the accuracy score of the
@@ -254,7 +261,7 @@ class ProcessAndTrainData(QWidget):
 
     def set_current_dataset_selection_dropdown_selection(self):
 
-        # Set spin boxes to the average values of the entire dataset if the user selects if from the dropdown
+        # Set spin boxes to the average values of the entire dataset if the user selects if from the dropdown.
         if self.dataset_selection_dropdown.currentIndex() == 0:
             self.pregnancy_spinbox.setValue(int(self.X[self.labels[0]].mean()))
             self.glucose_spinbox.setValue(int(self.X[self.labels[1]].mean()))
@@ -266,7 +273,7 @@ class ProcessAndTrainData(QWidget):
             self.age_spinbox.setValue(int(self.X[self.labels[7]].mean()))
 
         # Set spin boxes to the average values of the negative (women who don't have diabetes) dataset if the user
-        # selects if from the dropdown
+        # selects if from the dropdown.
         if self.dataset_selection_dropdown.currentIndex() == 1:
             self.pregnancy_spinbox.setValue(int(self.neg[self.labels[0]].mean()))
             self.glucose_spinbox.setValue(int(self.neg[self.labels[1]].mean()))
@@ -278,7 +285,7 @@ class ProcessAndTrainData(QWidget):
             self.age_spinbox.setValue(int(self.neg[self.labels[7]].mean()))
 
         # Set spin boxes to the average values of the positive (women who do have diabetes) dataset if the user selects
-        # if from the dropdown
+        # if from the dropdown.
         if self.dataset_selection_dropdown.currentIndex() == 2:
             self.pregnancy_spinbox.setValue(int(self.pos[self.labels[0]].mean()))
             self.glucose_spinbox.setValue(int(self.pos[self.labels[1]].mean()))
@@ -289,7 +296,7 @@ class ProcessAndTrainData(QWidget):
             self.diabetes_pedigree_function_spinbox.setValue(float(self.pos[self.labels[6]].mean()))
             self.age_spinbox.setValue(int(self.pos[self.labels[7]].mean()))
 
-        # Set spin boxes to the average values of the entire dataset if the user selects if from the dropdown
+        # Set spin boxes to the average values of the entire dataset if the user selects if from the dropdown.
         if self.dataset_selection_dropdown.currentIndex() == 3:
             self.pregnancy_spinbox.setValue(int(self.pos[self.labels[0]].mean()) + 5)
             self.glucose_spinbox.setValue(int(self.pos[self.labels[1]].mean()) + 20)
@@ -300,7 +307,7 @@ class ProcessAndTrainData(QWidget):
             self.diabetes_pedigree_function_spinbox.setValue(float(self.pos[self.labels[6]].mean()) + 0.5)
             self.age_spinbox.setValue(int(self.pos[self.labels[7]].mean()) + 10)
 
-        # Set spin boxes to values that will not have diabetes if the user selects if from the dropdown
+        # Set spin boxes to values that will not have diabetes if the user selects if from the dropdown.
         if self.dataset_selection_dropdown.currentIndex() == 4:
             self.pregnancy_spinbox.setValue(2)
             self.glucose_spinbox.setValue(100)
@@ -346,6 +353,7 @@ class ProcessAndTrainData(QWidget):
             print(f'Deleting {file}...')
             os.remove(file)
 
+        # Save the model to the CWD
         joblib.dump(
             self.training_model,
             f'{self.persisting_model_name}_{self.ac_score}.{self.persisting_model_filetype}'
@@ -357,6 +365,7 @@ class ProcessAndTrainData(QWidget):
 
         persisting_filename = glob.glob(f'{self.persisting_model_name}*{self.persisting_model_filetype}')[0]
 
+        # Load the joblib model. If it does not exist quit the program, otherwise return the model.
         try:
             load_model = joblib.load(persisting_filename)
 
@@ -372,23 +381,26 @@ class ProcessAndTrainData(QWidget):
 
     def make_prediction_using_user_entered_data(self, user_values):
 
-        trained_model = self.load_persisting_model()
-
-        prediction = trained_model.predict(user_values)  # Ask for a prediction using the user data set
-
         outcome = ['It is Predicted that You Do Not Have Diabetes', 'It is Predicted that You Have Diabetes']
 
-        # Print the prediction(s)
+        trained_model = self.load_persisting_model()
+
+        # Ask for a prediction using the user data set
+        prediction = trained_model.predict(user_values)
+
+        # Print the prediction to the console
         print()
         print('=' * 70)
         print(f'Prediction: {outcome[prediction[0]]}')
         print('=' * 70)
 
+        # Define the color of the text based on the outcome
         if prediction[0] == 0:
             self.result_font_color = 'green'
         else:
             self.result_font_color = 'red'
 
+        # Defining the style of the outcome label
         self.outcome_label.setStyleSheet(
             f'color: {self.result_font_color};'
             f'background-color: {self.result_bg_color};'
@@ -396,12 +408,15 @@ class ProcessAndTrainData(QWidget):
             f'padding: {self.result_padding}'
         )
 
-        self.outcome_label.setText(outcome[prediction[0]])  # (Accuracy: {round(ac_score * 100, 2)}%)')
+        # Set the text of the outcome label
+        self.outcome_label.setText(outcome[prediction[0]])
 
     def prediction_outcome(self):
 
+        # Start a timer to time the execution of the prediction
         start = time.perf_counter()
 
+        # Get the value of the input boxes
         self.user_data_list = [
             self.pregnancy_spinbox.value(),
             self.glucose_spinbox.value(),
@@ -413,12 +428,14 @@ class ProcessAndTrainData(QWidget):
             self.age_spinbox.value()
         ]
 
+        # Call the method to make a prediction passing the input data
         self.make_prediction_using_user_entered_data([self.user_data_list])
 
+        # Stop the timer
         end = time.perf_counter()
 
+        # Print the execution time to the console
         print(f'The prediction was done in {(end - start) * 10 ** 3:0.4f} ms')
-
 
     def close_predict_window(self):
 
