@@ -1,11 +1,15 @@
 # Diabetes Prediction using Machine Learning
+## Project Summary
+
+This project was made for a Machine learning class. We had to choose a dataset and apply machine leaning to it. The dataset that was chosen for this project was health data from the Pima Indian Tribe. Python is the language used, in addition to that, some of Pythons most popular data science libraries are imported to aid with machine learning. Read on for more detailed information.
+
 ## Project Description
 ### Solution Summary
 
 The problem is that diabetes is on the rise, and doctors and their staff will need help diagnosing diabetes quickly and accurately. This application proposes to use machine learning to help doctors quickly and accurately detect diabetes in patients based on a number of data points. With input from doctors and some code adjustment, it could also be used for early detection of diabetes. The application will provide the solution to this problem by using the patient’s medical data as input data entered by medical staff and output if the patient has diabetes or not. It uses a diabetes dataset consisting of 768 rows, with 8 input values(columns) and one target value(column) which is either true(1) indicating that the patient does have diabetes, or false(0) indicating that the patient does not have diabetes. There is also functionality to graph the input data to help visualize the dataset.
 
 ### Data Summary
-The source of the data for the proposed project is [Kaggle](https://www.kaggle.com/datasets/uciml/pima-indians-diabetes-database)
+The source of the data for the proposed project is [Kaggle](https://www.kaggle.com/datasets/uciml/-indians-diabetes-database)
 
 The method for the data collection was through direct medical examinations and tests administered by health professionals. This would typically involve measuring blood glucose levels, blood pressure, BMI, and other relevant health indicators through standard medical procedures. 
 
@@ -41,7 +45,7 @@ X = t / n ∗ 100
 Here X represents the classification accuracy, t is the number of correct classification and n is a total number of samples. (Deep learning approach for diabetes prediction using PIMA Indian dataset - Huma Naz￼ and Sachin Ahuja)
 
 ## User Guide
-Instructions for downloading and installing necessary software and libraries.
+### Getting Started
 > [!Note]
 > The following instructions are intended for a PC running Windows 10 or higher.
 
@@ -52,14 +56,14 @@ Instructions for downloading and installing necessary software and libraries.
 >  A command prompt window can be opened by pressing the windows key and typing `cmd`.
 
 3. In a command prompt window type: `python –version` or `python3 –version`  to ensure Python version 3.11 is installed and configured.
-4. (Optional) If running the application in a virtual environment is desired, configure it and install the following libraries while it is activated.
+4. (Optional) If running the application in a virtual environment is desired, configure it and install the following libraries while it is activated. Also make sure the virtual environment is running while runing the program. For more info see: [Getting started with Virtual Environments](https://docs.python.org/3/library/venv.html)
 5. In a command prompt window type: `pip install pandas`
 6. In a command prompt window type: `pip install numpy`
 7. In a command prompt window type: `pip install matplotlib`
 8. In a command prompt window type: `pip install -U scikit-learn` 
 9. In a command prompt window type: `pip install PyQt5`
 
-An example of how to use the application: 
+### How to Use
 1. Clone this project to any directory and make note of the path to it.
 2. In a command prompt window, navigate to the directory where the project was cloned and go into that directory.
 3. In a command prompt type `dir`, and verify that the “main.py”, “plot_data.py”, “process_and_train_data.py”, and “diabetes.csv” files are there, if any of those files are not present, go back to step 1.
@@ -88,15 +92,48 @@ An example of how to use the application:
 
 ## Visualizations
 ### Main Window
+![main_window](https://github.com/user-attachments/assets/64719604-df2f-4035-a580-beb9d4a11254)
 
 ### Bar Graph
+![bar_graph](https://github.com/user-attachments/assets/29b16805-f284-4151-a45c-0e509e4bfbe5)
 
 ### Scatter Plot
+![scatter_plot](https://github.com/user-attachments/assets/da62a7f1-f347-4dfc-a442-551a5866e0f9)
 
 ### Histogram
+![histogram_plot](https://github.com/user-attachments/assets/2c5d74e5-a2c8-4b1a-a2d9-51e5870865cb)
 
 ### Predict Window (No Prediction)
+![predict_window_no_prediction](https://github.com/user-attachments/assets/7633a94f-0176-403b-9b4f-6a4a8aab1f33)
 
 ### Predict Window (Negative Result)
+![predict_window_negative_result](https://github.com/user-attachments/assets/a4109288-227c-47ad-bb7f-577d6b119ef1)
 
 ### Predict Window (Positive Result)
+![predict_window_positive_result](https://github.com/user-attachments/assets/70f21f7a-eca4-4898-a2e9-7605f5b4ab3b)
+
+## References
+
+1.
+* Author: Geeks for Geeks
+* Date: 27-Feb-2024
+* Title: Supervised Machine Learning
+* Source: [Geeks for Geeks - Supervised Machine Learning](https://www.geeksforgeeks.org/supervised-machine-learning/)
+
+2.
+* Author: Geeks for Geeks
+* Date: 17-May-2024
+* Title: Decision Tree
+* Source: [Geeks for Geeks - Decision Tree](https://www.geeksforgeeks.org/decision-tree/)
+
+3.
+* Author: UCI MACHINE LEARNING and Kaggle Team
+* Date: Unknown (Updated 8 years ago)
+* Title: Pima Indians Diabetes Database
+* Source: [Kaggle - Pima Indians Diabetes Database](https://www.kaggle.com/datasets/uciml/pima-indians-diabetes-database)
+
+4.
+* Author: Huma Naz and Sachin Ahuja
+* Date: 19-June-2024
+* Title: Deep learning approach for diabetes prediction using PIMA Indian dataset
+* Source: [Deep learning approach for diabetes prediction using PIMA Indian dataset](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7270283/)
