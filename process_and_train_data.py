@@ -86,7 +86,8 @@ class ProcessAndTrainData(QWidget):
             model.
             self.close_predict_window_button(QPushButton Object): Defines a PyQt5 button to allow the user to close the
             predict window,
-            self.training_model(DecisionTreeClassifier Object): Defines the parameters of the decision tree classifier.
+            self.training_model(DecisionTreeClassifier Object): Defines and instance of the decision tree classifier and
+            the parameters needed to define its behavior.
 
         Returns: None
         """
@@ -173,6 +174,13 @@ class ProcessAndTrainData(QWidget):
         self.initialize_user_interface()
 
     def initialize_user_interface(self):
+        """
+        This method defines the predict window title, sets the window geometry, and defines the layout.
+
+        Parameters: None
+
+        Returns: None
+        """
 
         # Define the window title
         self.setWindowTitle('Predict Diabetes')
@@ -254,6 +262,16 @@ class ProcessAndTrainData(QWidget):
         self.setLayout(predict_window_layout)
 
     def modify_widgets(self):
+        """
+        This method defines the style of the font used in the predict window, adds items to the dropdown, defines the
+        methods that are called by the different buttons and the dropdown, defines 3 horizontal lines, defines the value
+        ranges of the spinbox, checks if there is already a persisting model in the current working directory. If there
+        is not a persisting model, the data is trained and a persisting model is saved in the cwd.
+
+        Parameters: None
+
+        Returns: None
+        """
 
         # Defining the style of the outcome label
         self.outcome_label.setFont(QFont('Default', 14))
@@ -334,9 +352,16 @@ class ProcessAndTrainData(QWidget):
             persisting_filename = glob.glob(f'{self.persisting_model_name}*{self.persisting_model_filetype}')[0]
             ac_score = persisting_filename.split('_')[2][:-7]
             self.training_model_accuracy_label.setText(f'Training Model Accuracy: {ac_score}%')
-            print(f'A joblib persisting model file was found and loaded.')
+            print(f'A joblib persisting model file was found.')
 
     def set_current_dataset_selection_dropdown_selection(self):
+        """
+        This method defines what data is loaded based on which selection the user made from the data_selection_dropdown.
+
+        Parameters: None
+
+        Returns: None
+        """
 
         # Set spin boxes to the average values of the entire dataset if the user selects if from the dropdown.
         if self.dataset_selection_dropdown.currentIndex() == 0:
@@ -396,6 +421,16 @@ class ProcessAndTrainData(QWidget):
             self.age_spinbox.setValue(45)
 
     def train_model_and_check_accuracy_using_training_data(self):
+        """
+        This method splits the data for training based on the defined training sample size(in this case it's split
+        80/20, the 80% split is used for training, and the 20% split is used for testing the model to get the accuracy),
+        then trains the model, then makes a prediction and uses the prediction to calculate the accuracy of the model,
+        and finally saves the persisting model.
+
+        Parameters: None
+
+        Returns: None
+        """
 
         # Split the data set into two random sets, one for training, one for testing. Returns X_train, X_test, y_train,
         # y_test (in that order)
@@ -410,13 +445,6 @@ class ProcessAndTrainData(QWidget):
         # Get a prediction with test dataset
         prediction = self.training_model.predict(x_test)
 
-        # Calculating the accuracy without sci-kit learn metric
-        # count = 0
-        # for value in range(len(prediction)):
-        #     if prediction[value] == y_test[value]:
-        #         count += 1
-        # print(f'Accuracy: {round(count / len(prediction) * 100, 2)}%')
-
         # Calculating the Accuracy Score
         self.ac_score = round(accuracy_score(y_test, prediction) * 100, 2)
 
@@ -430,6 +458,15 @@ class ProcessAndTrainData(QWidget):
         self.save_persisting_model()
 
     def save_persisting_model(self):
+        """
+        This method saves a persisting model, which is a trained model. This can help save time by using this model
+        instead of training the dataset each time. It first checks if there is an existing persisting model (*.joblib)
+        file, if so, it is deleted, then it saves the new model.
+
+        Parameters: None
+
+        Returns: None
+        """
 
         # Delete any existing joblib files
         joblib_files = glob.glob(f'{self.persisting_model_name}*{self.persisting_model_filetype}')
@@ -446,13 +483,22 @@ class ProcessAndTrainData(QWidget):
               f' was saved to {os.getcwd()}.')
 
     def load_persisting_model(self):
+        """
+        This method loads a saved persisting model. This can help save time by using this model instead of training the
+        dataset each time.
+
+        Parameters: None
+
+        Returns:
+            load_model(persisting model): The data needed from the trained data model. It is just calling the decision
+            tree classifier with the predefined parameters.
+        """
 
         persisting_filename = glob.glob(f'{self.persisting_model_name}*{self.persisting_model_filetype}')[0]
 
         # Load the joblib model. If it does not exist quit the program, otherwise return the model.
         try:
             load_model = joblib.load(persisting_filename)
-
         except FileNotFoundError:
             print()
             print('?!' * 60)
@@ -464,8 +510,20 @@ class ProcessAndTrainData(QWidget):
             return load_model
 
     def make_prediction_using_user_entered_data(self, user_values):
+        """
+        This method makes a prediction using the data that was entered in the data fields in the predict window. It then
+        makes a prediction based on the values that the user selected.
 
-        outcome = ['It is Predicted that You Do Not Have Diabetes', 'It is Predicted that You Have Diabetes']
+        Parameters:
+            user_values(
+
+        Returns: None
+        """
+
+        outcome = [
+            'It is Predicted that You Do Not Have Diabetes',  # Negative result message.
+            'It is Predicted that You Have Diabetes'  # Positive result message.
+        ]
 
         trained_model = self.load_persisting_model()
 
@@ -496,6 +554,15 @@ class ProcessAndTrainData(QWidget):
         self.outcome_label.setText(outcome[prediction[0]])
 
     def prediction_outcome(self):
+        """
+        This method starts a timer, then gets the current values from the user entered spinboxes in a list, sends the
+        values from the list to the make_prediction_using_user_entered_data() method to make the actual prediction,
+        stops the timer, then prints the time to the console.
+
+        Parameters: None
+
+        Returns: None
+        """
 
         # Start a timer to time the execution of the prediction
         start = time.perf_counter()
