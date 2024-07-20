@@ -7,7 +7,8 @@ import numpy as np
 
 class PlotData(QWidget):
     """
-    This class handles the layout of the graph window.
+    This class displays a bar graph, a scatter plot, and a histogram graph, one at a time, depending on what the user
+    chooses to be displayed.
 
     Attributes:
         self.data_frame(dataframe): The diabetes dataset loaded into a Pandas dataframe.

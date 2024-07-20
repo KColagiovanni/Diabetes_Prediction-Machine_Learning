@@ -11,8 +11,85 @@ import time
 
 
 class ProcessAndTrainData(QWidget):
+    """
+    This class trains the data and makes predictions using the trained model. The user can input 8 different values and
+    a prediction will be made on whether the patient has diabetes or not.
+
+    Attributes:
+        self.data_frame(dataframe): The diabetes dataset loaded into a Pandas dataframe.
+    """
 
     def __init__(self, data_frame):
+        """
+        Initializes the variables that will be used throughout the class.
+
+        Parameters:
+            self.left(int): Defines the distance, from the left side of the screen, that the predict window is
+            displayed.
+            self.top(int): Defines the distance, from the top of the screen, that the predict window is displayed.
+            self.width(int): Defines the width of the predict window.
+            self.height(int): Defines the height of the predict window.
+            self.result_font_color(str): Defines the font color for text in the window.
+            self.result_bg_color(str): Defines the background color of the window.
+            self.result_padding(str): Defines the padding in, px(pixels), for elements in the window.
+            self.result_border_thickness(str): Defines the border thickness, in px(pixels) for elements in the window.
+            self.X(Pandas Dataframe): The columns with the input data.
+            self.neg(Pandas Dataframe): The columns with the input data from women who don't have diabetes.
+            self.pos(Pandas Dataframe): The columns with the input data from women who do have diabetes.
+            self.y(Pandas Dataframe): The columns with the output or result data.
+            self.training_sample_size(float): The value if the training sample size. The value represents a percent and
+            should be between 0 and 1 (Ex. 0.3 = 30%).
+            self.ac_score(int): The accuracy score for the prediction model after it is trained..
+            self.persisting_model_name(str): The name of the persisting model. A persisting model is a model that has
+            been trained. Using this saves time so traing doesn't have to happen as uch, which could save time depending
+            on the size of the dataset.
+            self.persisting_model_filetype(str): The filetype of the persisting model.
+
+            self.labels(list of strings): The column names if the input data from the dataset.
+            self.user_data_list(list): This list will hold the values of each of the spinboxes used to enter patient
+            data.
+            self.outcome_label(QLabel Object): Defines a PyQt5 label that displays the outcome of the prediction.
+            self.pregnancy_spinbox_label(QLabel Object): Defines a PyQt5 label for the pregnancies spinbox.
+            self.glucose_spinbox_label(QLabel Object): Defines a PyQt5 label for the glucose spinbox.
+            self.blood_pressure_spinbox_label(QLabel Object): Defines a PyQt5 label for the blood pressure spinbox.
+            self.skin_thickness_spinbox_label(QLabel Object): Defines a PyQt5 label for the skin thickness spinbox.
+            self.insulin_spinbox_label(QLabel Object): Defines a PyQt5 label for the insulin spinbox.
+            self.bmi_spinbox_label(QLabel Object): Defines a PyQt5 label for the body mass index spinbox.
+            self.diabetes_pedigree_function_spinbox_label(QLabel Object): Defines a PyQt5 label for the diabetes
+            pedigree function spinbox.
+            self.age_spinbox_label(QLabel Object): Defines a PyQt5 label for the age spinbox.
+            self.dataset_selection_label(QLabel Object): Defines a PyQt5 label for the dataset selection spinbox.
+            self.training_model_accuracy_label(QLabel Object): Defines a PyQt5 label for the model accuracy precent..
+            self.horizontal_line1(QLabel Object): Defines a PyQt5 label to display a horizontal line..
+            self.horizontal_line2(QLabel Object): Defines a PyQt5 label to display a horizontal line.
+            self.horizontal_line3(QLabel Object): Defines a PyQt5 label to display a horizontal line.
+
+            # Defining Spinbox Widgets
+            self.dataset_selection_dropdown(QComboBox Object): Defines a PyQt5 combobox to allow the user to select
+            which dataset to use for the prediction.
+            self.pregnancy_spinbox(QSpinBox Object): Defines a PyQt5 spinbox to allow the user to select or enter a
+            value for number of pregnancies.
+            self.glucose_spinbox(QSpinBox Object): Defines a PyQt5 spinbox to allow the user to select or enter a value
+            for the glucose level.
+            self.blood_pressure_spinbox(QSpinBox Object): Defines a PyQt5 spinbox to allow the user to select or enter a
+            value for the blood pressure..
+            self.skin_thickness_spinbox(QSpinBox Object): Defines a PyQt5 spinbox to allow the user to select or enter a
+            value of the patients skin thickness.
+            self.insulin_spinbox(QSpinBox Object): Defines a PyQt5 spinbox to allow the user to select or enter a value
+            for the patients insulin level.
+            self.bmi_spinbox(QDoubleSpinBox Object): Defines a PyQt5 spinbox to allow the user to select or enter a
+            value for the patients bode mass index (bmi).
+            self.age_spinbox(QSpinBox Object): Defines a PyQt5 spinbox to allow the user to select or enter a value for
+            the patients age.
+            self.predict_button(QPushButton Object): Defines a PyQt5 button to allow the user to make predictions.
+            self.retrain_model_button(QPushButton Object): Defines a PyQt5 button to allow the user to retrain the
+            model.
+            self.close_predict_window_button(QPushButton Object): Defines a PyQt5 button to allow the user to close the
+            predict window,
+            self.training_model(DecisionTreeClassifier Object): Defines the parameters of the decision tree classifier.
+
+        Returns: None
+        """
         super().__init__()
 
         # Define variables
@@ -445,6 +522,13 @@ class ProcessAndTrainData(QWidget):
         print(f'The prediction was done in {(end - start) * 10 ** 3:0.4f} ms')
 
     def close_predict_window(self):
+        """
+        This method simply closes the predict window.
+
+        Parameters: None
+
+        Returns: None
+        """
 
         print('Closing the Prediction Window')
 
