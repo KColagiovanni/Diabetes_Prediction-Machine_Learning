@@ -199,6 +199,14 @@ class PlotData(QWidget):
         self.close_plot_window_button.setFixedHeight(self.graph_button_height)
 
     def get_changed_status_from_dropdown(self):
+        """
+        This method is called when the value of the select_plot_dropdown dropdown box changes and then gets the new
+        value selected in the dropdown box and hides or shows the hide_zero_values checkbox.
+
+        Parameters: None
+
+        Returns: None
+        """
 
         # If the pregnancies column is picked, hide the "Hide Zero Values" checkbox, otherwise show it.
         if self.select_plot_dropdown.currentIndex() == 0:
@@ -207,6 +215,17 @@ class PlotData(QWidget):
             self.hide_zero_values.setHidden(False)
 
     def bar_graph(self):
+        """
+        This method displays the bar graphs. It will display one set of data at a time based on whichever selection is
+        chosen by the user. It will then display 4 bar graphs, the max value of the data, the min value of the data, the
+        average value of the patients that don't have diabetes, and the average value ot the patients that do have
+        diabetes. Depending on which selection was made values may or may not be rounded. Then the values are plotted,
+        the title is defined and displayed, defines the legend, and finally draws the bar graph on the canvas.
+
+        Parameters: None
+
+        Returns: None
+        """
 
         # Define an instance of the process object
         ptd = ProcessAndTrainData(self.data_frame)
@@ -278,6 +297,19 @@ class PlotData(QWidget):
         self.canvas.draw()
 
     def scatter_plot(self):
+        """
+        This method displays the scatter plot. It will display one set of data at a time based on whichever selection is
+        chosen by the user. It will then display a scatter plot in the form of dots. Red dots are values of patients
+        that do have diabetes and green dots are values of patients who do not have diabetes. The progress bar is
+        displayed while the data is being loaded. If the user selects the hide_zero_values checkbox, then the zero
+        values are hidden for every data column except for pregnancies. Then the values are plotted, the title is
+        defined and displayed, the legend is defined, the ticks marks are defined and finally the scatter plot  is drawn
+        onto the canvas.
+
+        Parameters: None
+
+        Returns: None
+        """
 
         # Define local variables
         zero_count = 0
@@ -420,6 +452,17 @@ class PlotData(QWidget):
         self.progress_bar.reset()
 
     def histogram_plot(self):
+        """
+        This method displays the histogram plot. It will display one set of data at a time based on whichever selection
+        is chosen by the user. It will then display the histogram plot. Depending on if the hide_zero_values checkbox is
+        checked or not, the 0 values will be hidden in all columns except for the pregnancies column. Then the values
+        are plotted, the title is defined and displayed, defines the legend, and finally draws the histogram on the
+        canvas.
+
+        Parameters: None
+
+        Returns: None
+        """
 
         # Clearing old figure
         self.figure.clear()
@@ -469,6 +512,13 @@ class PlotData(QWidget):
         self.canvas.draw()
 
     def close_plot_window(self):
+        """
+        This method simply closes the plot window.
+
+        Parameters: None
+
+        Returns: None
+        """
 
         print('Closing the Graph Window')
 

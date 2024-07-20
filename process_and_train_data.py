@@ -333,6 +333,13 @@ class ProcessAndTrainData(QWidget):
         # Get a prediction with test dataset
         prediction = self.training_model.predict(x_test)
 
+        # Calculating the accuracy without sci-kit learn metric
+        # count = 0
+        # for value in range(len(prediction)):
+        #     if prediction[value] == y_test[value]:
+        #         count += 1
+        # print(f'Accuracy: {round(count / len(prediction) * 100, 2)}%')
+
         # Calculating the Accuracy Score
         self.ac_score = round(accuracy_score(y_test, prediction) * 100, 2)
 
