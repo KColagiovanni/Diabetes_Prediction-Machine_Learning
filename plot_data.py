@@ -6,8 +6,49 @@ import numpy as np
 
 
 class PlotData(QWidget):
+    """
+    This class handles the layout of the graph window.
+
+    Attributes:
+        self.data_frame(dataframe): The diabetes dataset loaded into a Pandas dataframe.
+    """
 
     def __init__(self, data_frame):
+        """
+        Initializes the variables that will be used throughout the class.
+
+        Parameters:
+            self.left(int): Defines the distance, from the left side of the screen, that the graph window is displayed.
+            self.top(int): Defines the distance, from the top of the screen, that the graph window is displayed.
+            self.width(int): Defines the width of the graph window.
+            self.height(int): Defines the height of the graph window.
+            canvas_width(int): Defines the width of the canvas where the graph will be displayed.
+            canvas_height(int): Defines the height of the canvas where the graph will be displayed.
+            self.graph_button_height(int): Defines the width of a button.
+            self.bg_color(str): Defines the background color of the window.
+            self.max_bar_color(str): Defines the color of the max value bar.
+            self.pos_bar_color(str): Defines the color of the negative value bar.
+            self.neg_bar_color(str): Defines the color of the positive value bar.
+            self.min_bar_color(str): Defines the color of the min value bar.
+            self.column_names(list of str): Defines the names of the dataframe columns.
+            self.figure(matplotlib figure): Defines the size and layout type of the figure, which is where the graphs
+            will be displayed.
+            self.canvas(FigureCanvas Object): Defines an instance of the figure canvas.
+            self.bar_graph_button(QPushButton Object): Defines a PyQt5 button to show the bar graph.
+            self.scatter_plot_button(QPushButton Object): Defines a PyQt5 button to show the scatter plot.
+            self.histogram_button(QPushButton Object): Defines a PyQt5 button to show the histogram graph.
+            self.close_plot_window_button(QPushButton Object): Defines a PyQt5 button to close the graph window.
+            self.hide_zero_values(QCheckBox Object): Defines a PyQt5 check box to  hide data that has a value of "0".
+            self.select_a_plot_label(QLabel Object): Defines a PyQt5 label for the select_plot_dropdown dropdown box.
+            self.horizontal_line(QLabel Object): Defines a PyQt5 label for drawing a horizontal line.
+            self.progress_bar(QProgressBar Object): Defines a PyQt5 progress bar to display the data loading progress of
+            the plot data to be displayed.
+            self.select_plot_dropdown(QComboBox Object): Defines a PyQt5 dropdown box for the user to select which data
+            column to display.
+
+        Returns: None
+        """
+
         super().__init__()
 
         # Define the data frame
@@ -50,7 +91,7 @@ class PlotData(QWidget):
         # Define the window buttons
         self.bar_graph_button = QPushButton('Show Bar Graph')
         self.scatter_plot_button = QPushButton('Show Scatter Plot')
-        self.new_plot_button = QPushButton('Show Histogram Graph')
+        self.histogram_button = QPushButton('Show Histogram Graph')
         self.close_plot_window_button = QPushButton('Close Window')
 
         # Define a checkbox and label to show or hide zero values in plots
@@ -72,6 +113,13 @@ class PlotData(QWidget):
         self.initialize_user_interface()
 
     def initialize_user_interface(self):
+        """
+        This method defines the graph window title, sets the window geometry, and defines the layout.
+
+        Parameters: None
+
+        Returns: None
+        """
 
         # Define the window title
         self.setWindowTitle('Graph Data')
@@ -106,7 +154,7 @@ class PlotData(QWidget):
         scatter_plot_groupbox_layout.addWidget(self.horizontal_line, 2, 0, 1, 3)
         scatter_plot_groupbox_layout.addWidget(self.bar_graph_button, 3, 0)
         scatter_plot_groupbox_layout.addWidget(self.scatter_plot_button, 3, 1)
-        scatter_plot_groupbox_layout.addWidget(self.new_plot_button, 3, 2)
+        scatter_plot_groupbox_layout.addWidget(self.histogram_button, 3, 2)
         scatter_plot_groupbox_layout.addWidget(self.close_plot_window_button, 4, 0, 1, 3)
 
         # Adding widgets to the plot window vertical layout
@@ -118,11 +166,20 @@ class PlotData(QWidget):
         self.setLayout(plot_window_layout)
 
     def modify_widgets(self):
+        """
+        This method defines the size of and aligns window objects, adds items to the dropdown, defines the methods
+        that are called by the different buttons and the dropdown, defines a horizontal line, and sets the check box to
+        be checked.
+
+        Parameters: None
+
+        Returns: None
+        """
 
         # Defining the methods to be called
         self.bar_graph_button.clicked.connect(self.bar_graph)
         self.scatter_plot_button.clicked.connect(self.scatter_plot)
-        self.new_plot_button.clicked.connect(self.histogram_plot)
+        self.histogram_button.clicked.connect(self.histogram_plot)
         self.close_plot_window_button.clicked.connect(self.close_plot_window)
         self.select_plot_dropdown.currentIndexChanged.connect(self.get_changed_status_from_dropdown)
 
@@ -138,7 +195,7 @@ class PlotData(QWidget):
         # Setting button height
         self.bar_graph_button.setFixedHeight(self.graph_button_height)
         self.scatter_plot_button.setFixedHeight(self.graph_button_height)
-        self.new_plot_button.setFixedHeight(self.graph_button_height)
+        self.histogram_button.setFixedHeight(self.graph_button_height)
         self.close_plot_window_button.setFixedHeight(self.graph_button_height)
 
     def get_changed_status_from_dropdown(self):

@@ -9,8 +9,38 @@ import numpy as np
 
 
 class MainWindow(QWidget):
+    """
+    This class handles the layout of the main window.
+
+    Attributes: None
+    """
 
     def __init__(self):
+        """
+        Initializes the variables that will be used throughout the class.
+
+        Parameters:
+            self.diabetes_dataset(str): The name of the dataset csv file.
+            self.left(int): Defines the distance, from the left side of the screen, that the main window is displayed.
+            self.top(int): Defines the distance, from the top of the screen, that the main window is displayed.
+            self.width(int): Defines the width of the main window.
+            self.height(int): Defines the height of the main window.
+            self.button_height(int): Defines the width of a button.
+            self.ptd(ProcessAndTrainData Object): Used to define the ProcessAndTrainData class instance.
+            self.pldata(PlotData Object): Used to define the PlotData class instance.
+            self.csv_loaded_label(QLabel Object): Defines a PyQt5 label to indicate if the dataset csv file has been
+            loaded.
+            self.check_for_csv_file_button(QPushButton Object): Defines a PyQt5 button to Check for CSV File Again.
+            self.dataset_selection_label(QLabel Object): Defines a PyQt5 label for the dataset selection dropdown.
+            self.dataset_selection_combobox(QComboBox Object): Defines a PyQt5 combo box for the user to select a
+            dataset.
+            self.show_graphs_button(QPushButton Object): Defines a PyQt5 button to open the graphs window.
+            self.predict_button(QPushButton Object): Defines a PyQt5 button to open the predict window.
+            self.close_button(QPushButton Object): Defines a PyQt5 button to close the main window.
+
+        Returns: None
+        """
+
         super().__init__()
 
         # Define variables
@@ -21,7 +51,6 @@ class MainWindow(QWidget):
         self.width = 500
         self.height = 300
         self.button_height = 40
-        self.button_width = 400
 
         self.ptd = ''
         self.pldata = ''
@@ -40,6 +69,13 @@ class MainWindow(QWidget):
         self.initialize_user_interface()
 
     def initialize_user_interface(self):
+        """
+        This method defines the main window title, sets the window geometry, and defines the layout.
+
+        Parameters: None
+
+        Returns: None
+        """
 
         # Define the window title
         self.setWindowTitle('Diabetes Predictor')
@@ -69,6 +105,14 @@ class MainWindow(QWidget):
         self.setLayout(main_window_layout)
 
     def modify_widgets(self):
+        """
+        This method defines the size of and aligns window objects, adds items to the combobox, and defines the methods
+        that are called by the different buttons.
+
+        Parameters: None
+
+        Returns: None
+        """
 
         # Define the CSV loaded label alignment to be centered
         self.csv_loaded_label.setAlignment(Qt.AlignCenter)
@@ -92,6 +136,14 @@ class MainWindow(QWidget):
         self.check_for_csv_file()
 
     def check_for_csv_file(self):
+        """
+        This method checks whether the dataset csv file has been found or not and enables or disables button
+        functionality depending on the outcome.
+
+        Parameters: None
+
+        Returns: None
+        """
 
         result = ''
         extra_details = ''
@@ -118,6 +170,18 @@ class MainWindow(QWidget):
         self.csv_loaded_label.setText(f'The diabetes dataset CSV file has{result} been found!{extra_details}')
 
     def load_data(self, csv_data):
+        """
+        This method loads the selected dataset that user has chosen. The user can choose between the original dataset,
+        or the cleaned dataset. The cleaned dataset replaces all the 0 values, except pregnancies, with the average
+        value of the column.
+
+        Parameters:
+            csv_data: The diabetes dataset csv file which has 9 columns and 768 rows of data.
+
+        Returns:
+            selected_dataframe_copy(dataframe): The dataset values from the csv file that the user has chosen, loaded
+            into a Pandas dataframe.
+        """
 
         # Use Pandas to load the csv dataset file
         selected_dataframe = pd.read_csv(csv_data)
@@ -154,6 +218,14 @@ class MainWindow(QWidget):
             return selected_dataframe_copy
 
     def make_prediction(self):
+        """
+        This method defines what happens when the "Predict" button is pressed. It calls the ProcessAndTrainData class
+        and displays the predict window.
+
+        Parameters: None
+
+        Returns:None
+        """
 
         # Open the prediction window only if the dataset file is found
         try:
@@ -165,6 +237,14 @@ class MainWindow(QWidget):
             self.ptd.show()
 
     def show_graphs(self):
+        """
+        This method defines what happens when the "Show Graphs" button is pressed. It calls the PlotData class and
+        displays the graph window.
+
+        Parameters: None
+
+        Returns:None
+        """
 
         # Open the graph window only if the dataset file is found
         try:
@@ -177,13 +257,21 @@ class MainWindow(QWidget):
 
     @staticmethod
     def close_window():
+        """
+        This method defines what happens when the "Close" button is pressed. It closes all windows which terminates the
+        program.
 
+        Parameters: None
+
+        Returns:None
+        """
         print('Exiting Main Application')
 
         # Close the main window and any other child windows
         QApplication.closeAllWindows()
 
 
+# Run the PyQt5 application
 if __name__ == '__main__':
 
     # Create PyQt5 app
