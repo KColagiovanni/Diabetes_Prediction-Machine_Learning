@@ -49,7 +49,7 @@ Here X represents the classification accuracy, t is the number of correct classi
 > [!Note]
 > The following instructions are intended for a PC running Windows 10 or higher.
 
-1. If it’s not already installed on the PC, download [Python 3.11](https://www.python.org/downloads/release/python-3119/)(The application may work with Python versions 3.8 through 3.10 or 3.12, but it was built, tested, and only guaranteed to work correctly using Python version 3.11)
+1. If it’s not already installed on the PC, download [Python 3.11](https://www.python.org/downloads/release/python-3119/)(The application may work with Python versions 3.8 or higher, but it was built, tested, and only guaranteed to work correctly using Python version 3.11)
 
 2. [Install Python](https://www.geeksforgeeks.org/how-to-install-python-on-windows/), after a successful installation, continue to the next step.
 > [!Note]
