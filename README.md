@@ -57,11 +57,8 @@ Here X represents the classification accuracy, t is the number of correct classi
 
 3. In a command prompt window type: `python –version` or `python3 –version`  to ensure Python version 3.11 is installed and configured.
 4. (Optional) If running the application in a virtual environment is desired, configure it and install the following libraries while it is activated. Also make sure the virtual environment is running while runing the program. For more info see: [Getting started with Virtual Environments](https://docs.python.org/3/library/venv.html)
-5. In a command prompt window type: `pip install pandas`
-6. In a command prompt window type: `pip install numpy`
-7. In a command prompt window type: `pip install matplotlib`
-8. In a command prompt window type: `pip install -U scikit-learn` 
-9. In a command prompt window type: `pip install PyQt5`
+5. In a command prompt window type: `pip install pandas numpy matplotlib PyQt5`
+9. In a command prompt window type: `pip install -U scikit-learn`
 
 ### How to Use
 1. Clone this project to any directory and make note of the path to it.
